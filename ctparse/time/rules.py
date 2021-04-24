@@ -3,7 +3,8 @@ from datetime import datetime
 from dateutil.relativedelta import relativedelta
 from dateutil.rrule import rrule, MONTHLY
 from ..rule import rule, predicate, dimension, _regex_to_join
-from ..types import Time, Duration, Interval, pod_hours, RegexMatch, DurationUnit, Recurring, RecurringFrequency, RecurringArray
+from ..types import Time, Duration, Interval, pod_hours, RegexMatch, DurationUnit, Recurring, RecurringFrequency, \
+    RecurringArray
 
 
 @rule(
@@ -365,7 +366,7 @@ def ruleLatentPOD(ts: datetime, pod: Time) -> Time:
 
 
 @rule(
-    r"(?<!\d|\.)(?P<day>(?&_day))[\./]" # removed \-
+    r"(?<!\d|\.)(?P<day>(?&_day))[\./]"  # removed \-
     r"((?P<month>(?&_month))|(?P<named_month>({})))\.?"
     r"(?!\d|am|\s*pm)".format(_rule_months)
 )
@@ -958,7 +959,6 @@ _rule_named_interval = "|".join(
 )
 _rule_named_interval = r"({})\s*".format(_rule_named_interval)
 
-
 _single_frequencies = [
     (RecurringFrequency.DAILY, r"daily"),
     (RecurringFrequency.WEEKLY, r"weekly"),
@@ -971,19 +971,17 @@ _rule_single_frequencies = r"|".join(
 )
 _rule_single_frequencies = r"({})\s*".format(_rule_single_frequencies)
 
-
 _frequencies = [
-    (RecurringFrequency.DAILY, r"day|d"),
-    (RecurringFrequency.WEEKLY, r"week|w"),
-    (RecurringFrequency.MONTHLY, r"month|m"),
-    (RecurringFrequency.YEARLY, r"year|y"),
+    (RecurringFrequency.DAILY, r"days?|d"),
+    (RecurringFrequency.WEEKLY, r"weeks?|w"),
+    (RecurringFrequency.MONTHLY, r"months?|m"),
+    (RecurringFrequency.YEARLY, r"years?|y"),
 ]
 
 _rule_frequencies = r"|".join(
     r"(?P<f_{}>{}\b)".format(freq.value, expr) for freq, expr in _frequencies
 )
 _rule_frequencies = r"({})\s*".format(_rule_frequencies)
-
 
 _recurring_dows = [
     ("mon", r"montags|mondays|mons\.?"),
@@ -1016,7 +1014,7 @@ def ruleRecurring(ts: datetime, m: RegexMatch) -> Optional[Recurring]:
     for f, _ in _frequencies:
         freq = m.match.group("f_" + f.value)
         if freq:
-            time= Time(year=ts.year, month=ts.month, day=ts.day)
+            time = Time(year=ts.year, month=ts.month, day=ts.day)
             return Recurring(frequency=f.value, interval=1, start_time=time, end_time=time)
 
     return None
@@ -1043,7 +1041,28 @@ def ruleDefinedRecurringIntervals(ts: datetime, r: Recurring, m: RegexMatch, sta
     # every other week from monday / every 2nd day from today / every day starting monday / beer 4am weekly from next monday
     start_time = Time(
         year=start.year,
-        month = start.month,
+        month=start.month,
+        day=start.day,
+        hour=r.start_time.hour or None,
+        minute=r.start_time.minute
+    )
+    end_time = Time(
+        year=start.year,
+        month=start.month,
+        day=start.day,
+        hour=r.end_time.hour or None,
+        minute=r.end_time.minute
+    )
+
+    return Recurring(frequency=r.frequency, interval=r.interval, start_time=start_time, end_time=end_time)
+
+
+@rule(r"(starting|beginning|from|starts?|begins?)\s*", predicate("isDate"), dimension(Recurring))
+def ruleDefinedRecurringIntervals2(ts: datetime, m: RegexMatch, start: Time,  r: Recurring) -> Optional[Recurring]:
+    # beer from 25th every other week
+    start_time = Time(
+        year=start.year,
+        month=start.month,
         day=start.day,
         hour=r.start_time.hour or None,
         minute=r.start_time.minute
@@ -1262,3 +1281,15 @@ def ruleRecurringWeekdays2(ts: datetime, t: Time, m: RegexMatch) -> Optional[Rec
                           rec_4=Recurring('weekly', 1, days[3], days[3]),
                           rec_5=Recurring('weekly', 1, days[4], days[4]),
                           )
+
+
+@rule(dimension(Duration), dimension(Recurring))
+def ruleDurationRecurring(ts: datetime, d: Duration, r: Recurring) -> Optional[Recurring]:
+    # beer in 3 days every week
+    dur = d.time(ts=ts)
+    time = Time(
+        year=dur.year,
+        month=dur.month,
+        day=dur.day
+    )
+    return Recurring(frequency=r.frequency, interval=r.interval, start_time=time, end_time=time)
