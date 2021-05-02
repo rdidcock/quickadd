@@ -825,7 +825,7 @@ _rule_durations = r"({})\s*".format(_rule_durations)
 
 
 # Rules regarding durations
-@rule(r"(?P<num>\d+)\s*" + _rule_durations)
+@rule(r"(in)\s*" + r"(?P<num>\d+)\s*" + _rule_durations)
 def ruleDigitDuration(ts: datetime, m: RegexMatch) -> Optional[Duration]:
     # 1 day, 1 night etc.
     num = m.match.group("num")
@@ -838,7 +838,7 @@ def ruleDigitDuration(ts: datetime, m: RegexMatch) -> Optional[Duration]:
     return None
 
 
-@rule(_rule_named_number + _rule_durations)
+@rule(r"(in)\s*" + _rule_named_number + _rule_durations)
 def ruleNamedNumberDuration(ts: datetime, m: RegexMatch) -> Optional[Duration]:
     # one day, two nights, thirty days etc.
     num = None
@@ -857,7 +857,7 @@ def ruleNamedNumberDuration(ts: datetime, m: RegexMatch) -> Optional[Duration]:
     return None
 
 
-@rule(r"(hal[fb]e?|1/2)(\s+an?)?\s*" + _rule_durations)
+@rule(r"(in)\s*" + r"(hal[fb]e?|1/2)(\s+an?)?\s*" + _rule_durations)
 def ruleDurationHalf(ts: datetime, m: RegexMatch) -> Optional[Duration]:
     # half day, half hour, 1/2 hour
     for n, _, in _durations:
