@@ -825,7 +825,7 @@ _rule_durations = r"({})\s*".format(_rule_durations)
 
 
 # Rules regarding durations
-@rule(r"(?P<num>\d+)\s*" + _rule_durations)
+@rule(r"(in)\s*" + r"(?P<num>\d+)\s*" + _rule_durations)
 def ruleDigitDuration(ts: datetime, m: RegexMatch) -> Optional[Duration]:
     # 1 day, 1 night etc.
     num = m.match.group("num")
@@ -838,7 +838,7 @@ def ruleDigitDuration(ts: datetime, m: RegexMatch) -> Optional[Duration]:
     return None
 
 
-@rule(_rule_named_number + _rule_durations)
+@rule(r"(in)\s*" + _rule_named_number + _rule_durations)
 def ruleNamedNumberDuration(ts: datetime, m: RegexMatch) -> Optional[Duration]:
     # one day, two nights, thirty days etc.
     num = None
@@ -857,7 +857,7 @@ def ruleNamedNumberDuration(ts: datetime, m: RegexMatch) -> Optional[Duration]:
     return None
 
 
-@rule(r"(hal[fb]e?|1/2)(\s+an?)?\s*" + _rule_durations)
+@rule(r"(in)\s*" + r"(hal[fb]e?|1/2)(\s+an?)?\s*" + _rule_durations)
 def ruleDurationHalf(ts: datetime, m: RegexMatch) -> Optional[Duration]:
     # half day, half hour, 1/2 hour
     for n, _, in _durations:
@@ -1058,7 +1058,7 @@ def ruleDefinedRecurringIntervals(ts: datetime, r: Recurring, m: RegexMatch, sta
 
 
 @rule(r"(starting|beginning|from|starts?|begins?)\s*", predicate("isDate"), dimension(Recurring))
-def ruleDefinedRecurringIntervals2(ts: datetime, m: RegexMatch, start: Time,  r: Recurring) -> Optional[Recurring]:
+def ruleDefinedRecurringIntervals2(ts: datetime, m: RegexMatch, start: Time, r: Recurring) -> Optional[Recurring]:
     # beer from 25th every other week
     start_time = Time(
         year=start.year,
@@ -1078,10 +1078,13 @@ def ruleDefinedRecurringIntervals2(ts: datetime, m: RegexMatch, start: Time,  r:
     return Recurring(frequency=r.frequency, interval=r.interval, start_time=start_time, end_time=end_time)
 
 
-@rule(dimension(Recurring), predicate("isTOD"))
-def ruleRecurringTime(ts: datetime, r: Recurring, t: Time) -> Optional[Recurring]:
-    # every day 4 / daily 4pm
+@rule(dimension(Time), dimension(Recurring))
+def ruleRecurringTime(ts: datetime, t: Time, r: Recurring) -> Optional[Recurring]:
+    # 4 every day / 4pm daily / 7am tomorrow weekly / friday 4pm daily
     r_time = r.start_time.dt
+    if t.hasDate:
+        r_time = t.dt
+
     dm = ts + relativedelta(hour=t.hour, minute=t.minute or 0, day=r_time.day)
     if dm <= ts:
         r_time += relativedelta(days=1)
@@ -1095,10 +1098,13 @@ def ruleRecurringTime(ts: datetime, r: Recurring, t: Time) -> Optional[Recurring
     return Recurring(frequency=r.frequency, interval=r.interval, start_time=time, end_time=time)
 
 
-@rule(predicate("isTOD"), dimension(Recurring))
-def ruleRecurringTime2(ts: datetime, t: Time, r: Recurring) -> Optional[Recurring]:
-    # 4 every day / 4pm daily
+@rule(dimension(Recurring), dimension(Time))
+def ruleRecurringTime2(ts: datetime, r: Recurring, t: Time) -> Optional[Recurring]:
+    # every day 4 / daily 4pm
     r_time = r.start_time.dt
+    if t.hasDate:
+        r_time = t.dt
+
     dm = ts + relativedelta(hour=t.hour, minute=t.minute or 0, day=r_time.day)
     if dm <= ts:
         r_time += relativedelta(days=1)
