@@ -869,70 +869,73 @@ def ruleDurationHalf(ts: datetime, m: RegexMatch) -> Optional[Duration]:
 
     return None
 
+# discarding these rules for now and adding their functional counterparts below.
+# These have no use case for us at the moment
+# TODO: update corpus.py and auto_corpus.py
 
-@rule(predicate("isDateInterval"), r"f[üo]r", dimension(Duration))
-def ruleIntervalConjDuration(
-    ts: datetime, interval: Interval, _: RegexMatch, dur: Duration
-) -> Optional[Interval]:
-    # Example: people tend to repeat themselves when specifying durations
-    # 15-16 Nov für 1 Nacht
-    return ruleDurationInterval(ts, dur, interval)  # type: ignore
-
-
-@rule(predicate("isDateInterval"), dimension(Duration))
-def ruleIntervalDuration(
-    ts: datetime, interval: Interval, dur: Duration
-) -> Optional[Interval]:
-    # Variant without conjunction
-    # 15-16 Nov 1 Nacht
-    return ruleDurationInterval(ts, dur, interval)  # type: ignore
+# @rule(predicate("isDateInterval"), r"f[üo]r", dimension(Duration))
+# def ruleIntervalConjDuration(
+#     ts: datetime, interval: Interval, _: RegexMatch, dur: Duration
+# ) -> Optional[Interval]:
+#     # Example: people tend to repeat themselves when specifying durations
+#     # 15-16 Nov für 1 Nacht
+#     return ruleDurationInterval(ts, dur, interval)  # type: ignore
 
 
-@rule(dimension(Duration), predicate("isDateInterval"))
-def ruleDurationInterval(
-    ts: datetime, dur: Duration, interval: Interval
-) -> Optional[Interval]:
-    # 3 days 15-18 Nov
-    delta = interval.t_to.dt - interval.t_from.dt
-    dur_delta = _duration_to_relativedelta(dur)
-    if delta.days == dur_delta.days:
-        return interval
-    return None
-
-
-@rule(predicate("hasDate"), r"f[üo]r", dimension(Duration))
-def ruleTimeDuration(
-    ts: datetime, t: Time, _: RegexMatch, dur: Duration
-) -> Optional[Interval]:
-    # Examples:
-    # on the 27th for one day
-    # heute eine Übernachtung
-
-    # To make an interval we should at least have a date
-    if dur.unit in (
-        DurationUnit.DAYS,
-        DurationUnit.NIGHTS,
-        DurationUnit.WEEKS,
-        DurationUnit.MONTHS,
-    ):
-        delta = _duration_to_relativedelta(dur)
-        end_ts = t.dt + delta
-        # We the end of the interval is a date without particular times
-        end = Time(year=end_ts.year, month=end_ts.month, day=end_ts.day)
-        return Interval(t_from=t, t_to=end)
-
-    if dur.unit in (DurationUnit.HOURS, DurationUnit.MINUTES):
-        delta = _duration_to_relativedelta(dur)
-        end_ts = t.dt + delta
-        end = Time(
-            year=end_ts.year,
-            month=end_ts.month,
-            day=end_ts.day,
-            hour=end_ts.hour,
-            minute=end_ts.minute,
-        )
-        return Interval(t_from=t, t_to=end)
-    return None
+# @rule(predicate("isDateInterval"), dimension(Duration))
+# def ruleIntervalDuration(
+#     ts: datetime, interval: Interval, dur: Duration
+# ) -> Optional[Interval]:
+#     # Variant without conjunction
+#     # 15-16 Nov 1 Nacht
+#     return ruleDurationInterval(ts, dur, interval)  # type: ignore
+#
+#
+# @rule(dimension(Duration), predicate("isDateInterval"))
+# def ruleDurationInterval(
+#     ts: datetime, dur: Duration, interval: Interval
+# ) -> Optional[Interval]:
+#     # 3 days 15-18 Nov
+#     delta = interval.t_to.dt - interval.t_from.dt
+#     dur_delta = _duration_to_relativedelta(dur)
+#     if delta.days == dur_delta.days:
+#         return interval
+#     return None
+#
+#
+# @rule(predicate("hasDate"), r"f[üo]r", dimension(Duration))
+# def ruleTimeDuration(
+#     ts: datetime, t: Time, _: RegexMatch, dur: Duration
+# ) -> Optional[Interval]:
+#     # Examples:
+#     # on the 27th for one day
+#     # heute eine Übernachtung
+#
+#     # To make an interval we should at least have a date
+#     if dur.unit in (
+#         DurationUnit.DAYS,
+#         DurationUnit.NIGHTS,
+#         DurationUnit.WEEKS,
+#         DurationUnit.MONTHS,
+#     ):
+#         delta = _duration_to_relativedelta(dur)
+#         end_ts = t.dt + delta
+#         # We the end of the interval is a date without particular times
+#         end = Time(year=end_ts.year, month=end_ts.month, day=end_ts.day)
+#         return Interval(t_from=t, t_to=end)
+#
+#     if dur.unit in (DurationUnit.HOURS, DurationUnit.MINUTES):
+#         delta = _duration_to_relativedelta(dur)
+#         end_ts = t.dt + delta
+#         end = Time(
+#             year=end_ts.year,
+#             month=end_ts.month,
+#             day=end_ts.day,
+#             hour=end_ts.hour,
+#             minute=end_ts.minute,
+#         )
+#         return Interval(t_from=t, t_to=end)
+#     return None
 
 
 def _duration_to_relativedelta(dur: Duration) -> relativedelta:
@@ -944,6 +947,76 @@ def _duration_to_relativedelta(dur: Duration) -> relativedelta:
         DurationUnit.HOURS: relativedelta(hours=dur.value),
         DurationUnit.MINUTES: relativedelta(minutes=dur.value),
     }[dur.unit]
+
+
+@rule(dimension(Time), dimension(Duration))
+def TimeDuration(ts: datetime, t: Time, d:Duration) -> Time:
+    # beer 4am in 3 days
+    delta = d.time(ts)
+    time = Time(
+        year=delta.year,
+        month=delta.month,
+        day=delta.day,
+        hour=t.hour,
+        minute=t.minute
+    )
+    return time
+
+
+@rule(dimension(Duration), dimension(Time))
+def DurationTime(ts: datetime, d: Duration, t: Time) -> Time:
+    # beer in 3 days 4am
+    delta = d.time(ts)
+    time = Time(
+        year=delta.year,
+        month=delta.month,
+        day=delta.day,
+        hour=t.hour,
+        minute=t.minute
+    )
+    return time
+
+
+@rule(dimension(Duration), dimension(Interval))
+def DurationInterval(ts: datetime, d: Duration, i: Interval) -> Interval:
+    # beer in 3 days 4-6
+    delta = d.time(ts)
+    start_time = Time(
+        year=delta.year,
+        month=delta.month,
+        day=delta.day,
+        hour=i.t_from.hour,
+        minute=i.t_from.minute
+    )
+    end_time = Time(
+        year=delta.year,
+        month=delta.month,
+        day=delta.day,
+        hour=i.t_to.hour,
+        minute=i.t_to.minute
+    )
+    return Interval(t_from=start_time, t_to=end_time)
+
+
+@rule(dimension(Interval), dimension(Duration))
+def IntervalDuration(ts: datetime, i: Interval, d: Duration) -> Interval:
+    # beer 4-6 in 3 days
+    delta = d.time(ts)
+    start_time = Time(
+        year=delta.year,
+        month=delta.month,
+        day=delta.day,
+        hour=i.t_from.hour,
+        minute=i.t_from.minute
+    )
+    end_time = Time(
+        year=delta.year,
+        month=delta.month,
+        day=delta.day,
+        hour=i.t_to.hour,
+        minute=i.t_to.minute
+    )
+    return Interval(t_from=start_time, t_to=end_time)
 
 
 ######### Recurring events #########
