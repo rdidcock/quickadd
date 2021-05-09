@@ -1,10 +1,9 @@
 ===========================================================
-Quick-add built on ctparse_
+quickadd built on ctparse_
 ===========================================================
 
 
 Upgrades
-----------
 
 Recurring events
 
@@ -36,7 +35,73 @@ Label extraction
     Out[3]: ['fun']
     
 
-``+`` **performance improvements**
+``+`` **bunch of performance improvements**
+
+
+Capabilities
+----------
+| **Time** 
+
+.. code:: python
+
+    "beer thursday 4"
+    Time[5-15]{2021-05-13 16:00 (X/X)}
+
+
+| **Interval** 
+
+.. code:: python
+
+    "beer 4-6"
+    Interval[0-0]{2021-05-09 16:00 (X/X) - 2021-05-09 18:00 (X/X)}
+
+
+| **Duration** 
+
+.. code:: python
+
+    "beer in 4 hours"
+    Duration[5-15]{4 hours}
+
+
+| **Recurring** 
+
+.. code:: python
+
+    "beer daily 4pm"
+    Recurring[5-14]{daily 1 2021-05-09 16:00 (X/X) 2021-05-09 16:00 (X/X)}
+    
+    
+     "beer every friday 9-5"
+    Recurring[5-21]{weekly 1 2021-05-14 09:00 (X/X) 2021-05-14 17:00 (X/X)}
+
+
+    "beer thursdays 3pm and wednesdays 4pm"
+    RecurringArray[5-37]{
+    Recurring instance: weekly 1 2021-05-13 15:00 (X/X) 2021-05-13 15:00 (X/X) 
+    Recurring instance: weekly 1 2021-05-12 16:00 (X/X) 2021-05-12 16:00 (X/X)
+    }
+    
+    "beer 9pm weekdays"
+    RecurringArray[5-17]{
+    Recurring instance: weekly 1 2021-05-10 21:00 (X/X) 2021-05-10 21:00 (X/X) 
+    Recurring instance: weekly 1 2021-05-11 21:00 (X/X) 2021-05-11 21:00 (X/X) 
+    Recurring instance: weekly 1 2021-05-12 21:00 (X/X) 2021-05-12 21:00 (X/X) 
+    Recurring instance: weekly 1 2021-05-13 21:00 (X/X) 2021-05-13 21:00 (X/X) 
+    Recurring instance: weekly 1 2021-05-14 21:00 (X/X) 2021-05-14 21:00 (X/X)}
+    
+    
+| **Combinations** 
+
+.. code:: python
+
+    "beer in 3 days 4pm"
+    Time[5-18]{2021-05-12 16:00 (X/X)}
+    
+    
+    "beer in 3 days 4pm every week"
+    Recurring[5-29]{weekly 1 2021-05-12 16:00 (X/X) 2021-05-12 16:00 (X/X)}
+
 
 
 Ctparse
