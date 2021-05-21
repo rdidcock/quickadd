@@ -68,18 +68,18 @@ def ruleNamedMonth(ts: datetime, m: RegexMatch) -> Optional[Time]:
 
 
 _named_ts = (
-    (1, r"one|eins?"),
-    (2, r"two|zwei"),
-    (3, r"three|drei"),
-    (4, r"four|vier"),
-    (5, r"five|fünf"),
-    (6, r"six|sechs"),
-    (7, r"seven|sieben"),
-    (8, r"eight|acht"),
-    (9, r"nine|neun"),
-    (10, r"ten|zehn"),
-    (11, r"eleven|elf"),
-    (12, r"twelve|zwölf"),
+    (1, r"\bone\b|\beins\b?"),
+    (2, r"\btwo\b|\bzwei\b"),
+    (3, r"\bthree\b|\bdrei\b"),
+    (4, r"\bfour\b|\bvier\b"),
+    (5, r"\bfive\b|\bfünf\b"),
+    (6, r"\bsix\b|\bsechs\b"),
+    (7, r"\bseven\b|\bsieben\b"),
+    (8, r"\beight\b|\bacht\b"),
+    (9, r"\bnine\b|\bneun\b"),
+    (10, r"\bten\b|\bzehn\b"),
+    (11, r"\beleven\b|\belf\b"),
+    (12, r"\btwelve\b|\bzwölf\b"),
 )
 _rule_named_ts = "|".join(r"(?P<t_{}>{})".format(n, expr) for n, expr in _named_ts)
 _rule_named_ts = r"({})\s*".format(_rule_named_ts)
