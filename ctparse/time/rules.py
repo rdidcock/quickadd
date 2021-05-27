@@ -243,15 +243,15 @@ def ruleBeforeYesterday(ts: datetime, _: RegexMatch) -> Time:
     return Time(year=dm.year, month=dm.month, day=dm.day)
 
 
-@rule(r"(das )?ende (des|dieses) monats?|(the )?(EOM|end of (the )?month)")
+@rule(r"(das )?ende (des|dieses) monats?|(the )?(\bEOM\b|end of (the )?month)")
 def ruleEOM(ts: datetime, _: RegexMatch) -> Time:
     dm = ts + relativedelta(day=1, months=1, days=-1)
     return Time(year=dm.year, month=dm.month, day=dm.day)
 
 
 @rule(
-    r"(das )?(EOY|jahr(es)? ?ende|ende (des )?jahr(es)?)|"
-    r"(the )?(EOY|end of (the )?year)"
+    r"(das )?(\bEOY\b|jahr(es)? ?ende|ende (des )?jahr(es)?)|"
+    r"(the )?(\bEOY\b|end of (the )?year)"
 )
 def ruleEOY(ts: datetime, _: RegexMatch) -> Time:
     dm = ts + relativedelta(day=1, month=1, years=1, days=-1)
