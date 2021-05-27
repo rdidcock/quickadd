@@ -121,28 +121,28 @@ def ruleEarlyLatePOD(ts: datetime, m: RegexMatch, p: Time) -> Time:
 
 
 _pods = [
-    (
-        "first",
-        (
-            r"(erster?|first|earliest|as early|frühe?st(ens?)?|so früh)"
-            "( (as )?possible| (wie )?möglich(er?)?)?"
-        ),
-    ),
-    (
-        "last",
-        (
-            r"(letzter?|last|latest|as late as possible|spätest möglich(er?)?|"
-            "so spät wie möglich(er?)?)"
-        ),
-    ),
-    ("earlymorning", r"very early|sehr früh"),
-    ("lateevening", r"very late|sehr spät"),
-    ("morning", r"morning|morgend?s?|(in der )?frühe?|early"),
-    ("forenoon", r"forenoon|vormittags?"),
-    ("afternoon", r"afternoon|nachmittags?"),
-    ("noon", r"noon|mittags?"),
-    ("evening", r"evening|tonight|late|abend?s?|spät"),
-    ("night", r"night|nachts?"),
+    # (
+    #     "first",
+    #     (
+    #         r"(erster?|first|earliest|as early|frühe?st(ens?)?|so früh)"
+    #         "( (as )?possible| (wie )?möglich(er?)?)?"
+    #     ),
+    # ),
+    # (
+    #     "last",
+    #     (
+    #         r"(letzter?|last|latest|as late as possible|spätest möglich(er?)?|"
+    #         "so spät wie möglich(er?)?)"
+    #     ),
+    # ),
+    # ("earlymorning", r"very early|sehr früh"),
+    # ("lateevening", r"very late|sehr spät"),
+    ("morning", r"\bmorning\b|\bmorgend?s?\b"),
+    ("forenoon", r"\bforenoon\b|\bvormittags?\b"),
+    ("afternoon", r"\bafternoon\b|\bnachmittags?\b"),
+    ("noon", r"\bnoon\b|\bmittags?\b"),
+    ("evening", r"\bevening\b|\btonight\b|\babend?s?\b|\bspät\b"),
+    ("night", r"\bnight\b|\bnachts?\b"),
 ]
 
 _rule_pods = "|".join("(?P<{}>{})".format(pod, expr) for pod, expr in _pods)
