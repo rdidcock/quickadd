@@ -21,13 +21,13 @@ def ruleAbsorbFromInterval(ts: datetime, _: Any, i: Interval) -> Interval:
 
 
 _dows = [
-    ("mon", r"\bmontag\b|\bmonday\b|\bmon?\.?\b"),
-    ("tue", r"\bdie?nstag\b|\bdie?\.?\b|\btuesday\b|\btue?\.?\b"),
+    ("mon", r"\bmontag\b|\bmonday\b|\bmon\.?\b"),
+    ("tue", r"\bdie?nstag\b|\bdie\.?\b|\btuesday\b|\btue\.?\b"),
     ("wed", r"\bmittwoch\b|\bmi\.?\b|\bwednesday\b|\bwed\.?\b"),
-    ("thu", r"\bdonn?erstag\b|\bdon?\.?\b|\bthursday\b|\bthur?\.?\b"),
-    ("fri", r"\bfreitag\b|\bfriday\b|\bfri?\.?\b"),
-    ("sat", r"\bsamstag\b|\bsonnabends?\b|\bsaturday\b|\bsat?\.?\b"),
-    ("sun", r"\bsonntag\b|\bso\.?\b|\bsunday\b|\bsun?\.?\b"),
+    ("thu", r"\bdonn?erstag\b|\bthursday\b|\bthur?\.?\b"),
+    ("fri", r"\bfreitag\b|\bfriday\b|\bfri\.?\b"),
+    ("sat", r"\bsamstag\b|\bsonnabends?\b|\bsaturday\b|\bsat\.?\b"),
+    ("sun", r"\bsonntag\b|\bso\.?\b|\bsunday\b|\bsun\.?\b"),
 ]
 _rule_dows = r"|".join(r"(?P<{}>{})".format(dow, expr) for dow, expr in _dows)
 _rule_dows = r"({})\s*".format(_rule_dows)
