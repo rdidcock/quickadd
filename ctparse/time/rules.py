@@ -809,13 +809,13 @@ _rule_named_number = "|".join(
 _rule_named_number = r"({})\s*".format(_rule_named_number)
 
 _durations = [
-    (DurationUnit.NIGHTS, r"n[aä]chte?|nights?|[üu]bernachtung"),
-    (DurationUnit.DAYS, r"tage?|days?|d"),
-    (DurationUnit.MINUTES, r"m(inute[ns]?)?"),
-    (DurationUnit.HOURS, r"stunden?|h(ours?)?|h|hrs?"),
-    (DurationUnit.WEEKS, r"weeks?|wochen?|w"),
-    (DurationUnit.MONTHS, r"monate?|months?"),
-    (DurationUnit.YEARS, r'jahre?|years?|y|yrs?'),
+    (DurationUnit.NIGHTS, r"\bn[aä]chte?\b|\bnights?\b|\b[üu]bernachtung\b"),
+    (DurationUnit.DAYS, r"\btage?\b|\bdays?\b|\bd\b"),
+    (DurationUnit.MINUTES, r"\bm(inute[ns]?)?\b"),
+    (DurationUnit.HOURS, r"\bstunden?\b|\bh(ours?)?\b|\bh\b|\bhrs?\b"),
+    (DurationUnit.WEEKS, r"\bweeks?\b|\bwochen?\b|\bw\b"),
+    (DurationUnit.MONTHS, r"\bmonate?\b|\bmonths?\b"),
+    (DurationUnit.YEARS, r'\bjahre?\b|\byears?\b|\by\b|\byrs?\b'),
 ]
 
 _rule_durations = r"|".join(
