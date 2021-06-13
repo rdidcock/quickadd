@@ -156,13 +156,13 @@ def rulePOD(ts: datetime, m: RegexMatch) -> Optional[Time]:
     return None
 
 
-@rule(r"(?<!\d|\.|\S)(?P<day>(?&_day))\.?(?!\d|\S)")
+@rule(r"(?<!\d|\.)(?P<day>(?&_day))\.?(?!\d)")
 def ruleDOM1(ts: datetime, m: RegexMatch) -> Time:
     # Ordinal day "5."
     return Time(day=int(m.match.group("day")))
 
 
-@rule(r"(?<!\d|\.|\S)(?P<month>(?&_month))\.?(?!\d|\S)")
+@rule(r"(?<!\d|\.)(?P<month>(?&_month))\.?(?!\d)")
 def ruleMonthOrdinal(ts: datetime, m: RegexMatch) -> Time:
     # Ordinal day "5."
     return Time(month=int(m.match.group("month")))
@@ -174,7 +174,7 @@ def ruleDOM2(ts: datetime, m: RegexMatch) -> Time:
     return Time(day=int(m.match.group("day")))
 
 
-@rule(r"(?<!\d|\.|\S)(?P<year>(?&_year))(?!\d|\S)")
+@rule(r"(?<!\d|\.)(?P<year>(?&_year))(?!\d)")
 def ruleYear(ts: datetime, m: RegexMatch) -> Time:
     # Since we may have two-digits years, we have to make a call
     # on how to handle which century does the time refers to.
@@ -474,13 +474,13 @@ def ruleHHMMmilitary(ts: datetime, m: RegexMatch) -> Optional[Time]:
 
 
 @rule(
-    r"(?<!\d|\.|\S)"  # We don't start matching with another number, or a dot or a char
+    r"(?<!\d|\.)"  # We don't start matching with another number, or a dot
     r"(?P<hour>(?&_hour))"  # We certainly match an hour
     # We try to match also the minute
     r"((?P<sep>:|uhr|h|\.)(?P<minute>(?&_minute)))?"
     r"\s*(?P<clock>uhr|h)?"  # We match uhr with no minute
     r"(?P<ampm>\s*[ap]\.?m\.?)?"  # AM PM
-    r"(?!\d|\S)" # no char
+    r"(?!\d)"
 )
 def ruleHHMM(ts: datetime, m: RegexMatch) -> Time:
     # hh [am|pm]
