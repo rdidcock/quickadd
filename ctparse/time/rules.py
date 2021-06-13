@@ -42,18 +42,18 @@ def ruleNamedDOW(ts: datetime, m: RegexMatch) -> Optional[Time]:
 
 
 _months = [
-    ("january", r"january?|jan\.?"),
-    ("february", r"february?|feb\.?"),
-    ("march", r"märz|march|mar\.?|mrz\.?|mär\.?"),
-    ("april", r"april|apr\.?"),
-    ("may", r"mai|may\.?"),
-    ("june", r"juni|june|jun\.?"),
-    ("july", r"juli|july|jul\.?"),
-    ("august", r"august|aug\.?"),
-    ("september", r"september|sept?\.?"),
-    ("october", r"oktober|october|oct\.?|okt\.?"),
-    ("november", r"november|nov\.?"),
-    ("december", r"december|dezember|dez\.?|dec\.?"),
+    ("january", r"\bjanuary?\b|\bjan\.?\b"),
+    ("february", r"\bfebruary?\b|\bfeb\.?\b"),
+    ("march", r"\bmärz\b|\bmarch\b|\bmar\.?\b|\bmrz\.?\b|\bmär\.?\b"),
+    ("april", r"\bapril\b|\bapr\.?\b"),
+    ("may", r"\bmai\b|\bmay\.?\b"),
+    ("june", r"\bjuni\b|\bjune\b|\bjun\.?\b"),
+    ("july", r"\bjuli\b|\bjuly\b|\bjul\.?\b"),
+    ("august", r"\baugust\b|\baug\.?\b"),
+    ("september", r"\bseptember\b|\bsept?\.?\b"),
+    ("october", r"\boktober\b|\boctober\b|\boct\.?\b|\bokt\.?\b"),
+    ("november", r"\bnovember\b|\bnov\.?\b"),
+    ("december", r"\bdecember\b|\bdezember\b|\bdez\.?\b|\bdec\.?\b"),
 ]
 _rule_months = "|".join(r"(?P<{}>{})".format(name, expr) for name, expr in _months)
 
