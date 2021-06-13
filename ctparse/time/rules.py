@@ -1057,13 +1057,13 @@ _rule_frequencies = r"|".join(
 _rule_frequencies = r"({})\s*".format(_rule_frequencies)
 
 _recurring_dows = [
-    ("mon", r"montags|mondays|mons\.?"),
-    ("tue", r"die?nstags|dies\.?|tuesdays|tues\.?"),
-    ("wed", r"mittwochs|mis\.?|wednesdays|weds\.?"),
-    ("thu", r"donn?erstags|dons\.?|thursdays|thurs\.?"),
-    ("fri", r"freitags|fridays|fris\.?"),
-    ("sat", r"samstags|sonnabends|saturdays|sats\.?"),
-    ("sun", r"sonntags|sos\.?|sundays|suns\.?"),
+    ("mon", r"\bmontags\b|\bmondays\b|\bmons\.?\b"),
+    ("tue", r"\bdie?nstags\b|\bdies\.?\b|\btuesdays\b|\btues\.?\b"),
+    ("wed", r"\bmittwochs\b|\bmis\.?\b|\bwednesdays\b|\bweds\.?\b"),
+    ("thu", r"\bdonn?erstags\b|\bdons\.?\b|\bthursdays\b|\bthurs\.?\b"),
+    ("fri", r"\bfreitags\b|\bfridays\b|\bfris\.?\b"),
+    ("sat", r"\bsamstags\b|\bsonnabends\b|\bsaturdays\b|\bsats\.?\b"),
+    ("sun", r"\bsonntags\b|\bsos\.?\b|\bsundays\b|\bsuns\.?\b"),
 ]
 _rule_recurring_dows = r"|".join(r"(?P<{}>{})".format(dow, expr) for dow, expr in _recurring_dows)
 _rule_recurring_dows = r"({})\s*".format(_rule_recurring_dows)
