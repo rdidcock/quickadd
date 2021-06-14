@@ -21,13 +21,13 @@ def ruleAbsorbFromInterval(ts: datetime, _: Any, i: Interval) -> Interval:
 
 
 _dows = [
-    ("mon", r"\bmontag\b|\bmonday\b|\bmon?\.?\b"),
-    ("tue", r"\bdie?nstag\b|\bdie?\.?\b|\btuesday\b|\btue?\.?\b"),
+    ("mon", r"\bmontag\b|\bmonday\b|\bmon\.?\b"),
+    ("tue", r"\bdie?nstag\b|\bdie\.?\b|\btuesday\b|\btue\.?\b"),
     ("wed", r"\bmittwoch\b|\bmi\.?\b|\bwednesday\b|\bwed\.?\b"),
-    ("thu", r"\bdonn?erstag\b|\bdon?\.?\b|\bthursday\b|\bthur?\.?\b"),
-    ("fri", r"\bfreitag\b|\bfriday\b|\bfri?\.?\b"),
-    ("sat", r"\bsamstag\b|\bsonnabends?\b|\bsaturday\b|\bsat?\.?\b"),
-    ("sun", r"\bsonntag\b|\bso\.?\b|\bsunday\b|\bsun?\.?\b"),
+    ("thu", r"\bdonn?erstag\b|\bthursday\b|\bthur?\.?\b"),
+    ("fri", r"\bfreitag\b|\bfriday\b|\bfri\.?\b"),
+    ("sat", r"\bsamstag\b|\bsonnabends?\b|\bsaturday\b|\bsat\.?\b"),
+    ("sun", r"\bsonntag\b|\bso\.?\b|\bsunday\b|\bsun\.?\b"),
 ]
 _rule_dows = r"|".join(r"(?P<{}>{})".format(dow, expr) for dow, expr in _dows)
 _rule_dows = r"({})\s*".format(_rule_dows)
@@ -42,18 +42,18 @@ def ruleNamedDOW(ts: datetime, m: RegexMatch) -> Optional[Time]:
 
 
 _months = [
-    ("january", r"january?|jan\.?"),
-    ("february", r"february?|feb\.?"),
-    ("march", r"märz|march|mar\.?|mrz\.?|mär\.?"),
-    ("april", r"april|apr\.?"),
-    ("may", r"mai|may\.?"),
-    ("june", r"juni|june|jun\.?"),
-    ("july", r"juli|july|jul\.?"),
-    ("august", r"august|aug\.?"),
-    ("september", r"september|sept?\.?"),
-    ("october", r"oktober|october|oct\.?|okt\.?"),
-    ("november", r"november|nov\.?"),
-    ("december", r"december|dezember|dez\.?|dec\.?"),
+    ("january", r"\bjanuary?\b|\bjan\.?\b"),
+    ("february", r"\bfebruary?\b|\bfeb\.?\b"),
+    ("march", r"\bmärz\b|\bmarch\b|\bmar\.?\b|\bmrz\.?\b|\bmär\.?\b"),
+    ("april", r"\bapril\b|\bapr\.?\b"),
+    ("may", r"\bmai\b|\bmay\.?\b"),
+    ("june", r"\bjuni\b|\bjune\b|\bjun\.?\b"),
+    ("july", r"\bjuli\b|\bjuly\b|\bjul\.?\b"),
+    ("august", r"\baugust\b|\baug\.?\b"),
+    ("september", r"\bseptember\b|\bsept?\.?\b"),
+    ("october", r"\boktober\b|\boctober\b|\boct\.?\b|\bokt\.?\b"),
+    ("november", r"\bnovember\b|\bnov\.?\b"),
+    ("december", r"\bdecember\b|\bdezember\b|\bdez\.?\b|\bdec\.?\b"),
 ]
 _rule_months = "|".join(r"(?P<{}>{})".format(name, expr) for name, expr in _months)
 
@@ -809,13 +809,13 @@ _rule_named_number = "|".join(
 _rule_named_number = r"({})\s*".format(_rule_named_number)
 
 _durations = [
-    (DurationUnit.NIGHTS, r"n[aä]chte?|nights?|[üu]bernachtung"),
-    (DurationUnit.DAYS, r"tage?|days?|d"),
-    (DurationUnit.MINUTES, r"m(inute[ns]?)?"),
-    (DurationUnit.HOURS, r"stunden?|h(ours?)?|h|hrs?"),
-    (DurationUnit.WEEKS, r"weeks?|wochen?|w"),
-    (DurationUnit.MONTHS, r"monate?|months?"),
-    (DurationUnit.YEARS, r'jahre?|years?|y|yrs?'),
+    (DurationUnit.NIGHTS, r"\bn[aä]chte?\b|\bnights?\b|\b[üu]bernachtung\b"),
+    (DurationUnit.DAYS, r"\btage?\b|\bdays?\b|\bd\b"),
+    (DurationUnit.MINUTES, r"\bm(inute[ns]?)?\b"),
+    (DurationUnit.HOURS, r"\bstunden?\b|\bh(ours?)?\b|\bh\b|\bhrs?\b"),
+    (DurationUnit.WEEKS, r"\bweeks?\b|\bwochen?\b|\bw\b"),
+    (DurationUnit.MONTHS, r"\bmonate?\b|\bmonths?\b"),
+    (DurationUnit.YEARS, r'\bjahre?\b|\byears?\b|\by\b|\byrs?\b'),
 ]
 
 _rule_durations = r"|".join(
@@ -1057,13 +1057,13 @@ _rule_frequencies = r"|".join(
 _rule_frequencies = r"({})\s*".format(_rule_frequencies)
 
 _recurring_dows = [
-    ("mon", r"montags|mondays|mons\.?"),
-    ("tue", r"die?nstags|dies\.?|tuesdays|tues\.?"),
-    ("wed", r"mittwochs|mis\.?|wednesdays|weds\.?"),
-    ("thu", r"donn?erstags|dons\.?|thursdays|thurs\.?"),
-    ("fri", r"freitags|fridays|fris\.?"),
-    ("sat", r"samstags|sonnabends|saturdays|sats\.?"),
-    ("sun", r"sonntags|sos\.?|sundays|suns\.?"),
+    ("mon", r"\bmontags\b|\bmondays\b|\bmons\.?\b"),
+    ("tue", r"\bdie?nstags\b|\bdies\.?\b|\btuesdays\b|\btues\.?\b"),
+    ("wed", r"\bmittwochs\b|\bmis\.?\b|\bwednesdays\b|\bweds\.?\b"),
+    ("thu", r"\bdonn?erstags\b|\bdons\.?\b|\bthursdays\b|\bthurs\.?\b"),
+    ("fri", r"\bfreitags\b|\bfridays\b|\bfris\.?\b"),
+    ("sat", r"\bsamstags\b|\bsonnabends\b|\bsaturdays\b|\bsats\.?\b"),
+    ("sun", r"\bsonntags\b|\bsos\.?\b|\bsundays\b|\bsuns\.?\b"),
 ]
 _rule_recurring_dows = r"|".join(r"(?P<{}>{})".format(dow, expr) for dow, expr in _recurring_dows)
 _rule_recurring_dows = r"({})\s*".format(_rule_recurring_dows)
