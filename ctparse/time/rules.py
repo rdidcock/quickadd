@@ -950,7 +950,7 @@ def _duration_to_relativedelta(dur: Duration) -> relativedelta:
 
 
 @rule(dimension(Time), dimension(Duration))
-def TimeDuration(ts: datetime, t: Time, d:Duration) -> Time:
+def TimeDuration(ts: datetime, t: Time, d: Duration) -> Time:
     # beer 4am in 3 days
     delta = d.time(ts)
     time = Time(
@@ -979,7 +979,11 @@ def DurationTime(ts: datetime, d: Duration, t: Time) -> Time:
 
 @rule(dimension(Duration), dimension(Interval))
 def DurationInterval(ts: datetime, d: Duration, i: Interval) -> Interval:
-    # beer in 3 days 4-6
+    # beer in 3 days 4-6pm
+
+    if not i.isTimeInterval:
+        return None
+
     delta = d.time(ts)
     start_time = Time(
         year=delta.year,
@@ -1000,7 +1004,13 @@ def DurationInterval(ts: datetime, d: Duration, i: Interval) -> Interval:
 
 @rule(dimension(Interval), dimension(Duration))
 def IntervalDuration(ts: datetime, i: Interval, d: Duration) -> Interval:
-    # beer 4-6 in 3 days
+
+    # beer 4-6pm in 3 days
+    # TODO: "4-6 in 3 days" doesn't work
+
+    if not i.isTimeInterval:
+        return None
+
     delta = d.time(ts)
     start_time = Time(
         year=delta.year,
