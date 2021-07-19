@@ -1070,7 +1070,7 @@ _recurring_dows = [
     ("mon", r"\bmontags\b|\bmondays\b|\bmons\.?\b"),
     ("tue", r"\bdie?nstags\b|\bdies\.?\b|\btuesdays\b|\btues\.?\b"),
     ("wed", r"\bmittwochs\b|\bmis\.?\b|\bwednesdays\b|\bweds\.?\b"),
-    ("thu", r"\bdonn?erstags\b|\bdons\.?\b|\bthursdays\b|\bthurs\.?\b"),
+    ("thu", r"\bdonn?erstags\b|\bdons\.?\b|\bthursdays\b|\bthurs\.?\b|\bthu\b"),
     ("fri", r"\bfreitags\b|\bfridays\b|\bfris\.?\b"),
     ("sat", r"\bsamstags\b|\bsonnabends\b|\bsaturdays\b|\bsats\.?\b"),
     ("sun", r"\bsonntags\b|\bsos\.?\b|\bsundays\b|\bsuns\.?\b"),
@@ -1258,7 +1258,7 @@ def ruleRecurringDOW(ts: datetime, m: RegexMatch, dow: Time) -> Optional[Recurri
     if dm <= ts:
         dm += relativedelta(weeks=1)
     time = Time(year=dm.year, month=dm.month, day=dm.day, DOW=dow.DOW)
-    return Recurring(frequency='weekly', interval=1, start_time=time, end_time=time)
+    return Recurring(frequency=RecurringFrequency.WEEKLY.value, interval=1, start_time=time, end_time=time)
 
 
 @rule(r"(every|each)\s*" + _rule_named_interval, predicate("isDOW"))
@@ -1273,7 +1273,7 @@ def ruleRecurringIntervalDOW(ts: datetime, m: RegexMatch, dow: Time) -> Optional
     if dm <= ts:
         dm += relativedelta(weeks=1)
     time = Time(year=dm.year, month=dm.month, day=dm.day, DOW=dow.DOW)
-    return Recurring(frequency='weekly', interval=itv, start_time=time, end_time=time)
+    return Recurring(frequency=RecurringFrequency.WEEKLY.value, interval=itv, start_time=time, end_time=time)
 
 
 @rule(_rule_recurring_dows)
@@ -1286,7 +1286,7 @@ def ruleRecurringDOWS(ts: datetime, m: RegexMatch) -> Optional[Recurring]:
             if dm <= ts:
                 dm += relativedelta(weeks=1)
             time = Time(year=dm.year, month=dm.month, day=dm.day, DOW=dow)
-            return Recurring(frequency="weekly", interval=1, start_time=time, end_time=time)
+            return Recurring(frequency=RecurringFrequency.WEEKLY.value, interval=1, start_time=time, end_time=time)
     return None
 
 
@@ -1305,13 +1305,13 @@ def ruleRecurringDOWDOW(ts: datetime, m1: RegexMatch, dow1: Time, m2: RegexMatch
     if dm <= ts:
         dm += relativedelta(weeks=1)
     time1 = Time(year=dm.year, month=dm.month, day=dm.day, DOW=dow1.DOW)
-    rec_1 = Recurring(frequency='weekly', interval=1, start_time=time1, end_time=time1)
+    rec_1 = Recurring(frequency=RecurringFrequency.WEEKLY.value, interval=1, start_time=time1, end_time=time1)
 
     dm2 = ts + relativedelta(weekday=dow2.DOW)
     if dm2 <= ts:
         dm2 += relativedelta(weeks=1)
     time2 = Time(year=dm2.year, month=dm2.month, day=dm2.day, DOW=dow2.DOW)
-    rec_2 = Recurring(frequency='weekly', interval=1, start_time=time2, end_time=time2)
+    rec_2 = Recurring(frequency=RecurringFrequency.WEEKLY.value, interval=1, start_time=time2, end_time=time2)
 
     return RecurringArray(rec_1=rec_1, rec_2=rec_2)
 
@@ -1336,11 +1336,11 @@ def ruleRecurringWeekdays(ts: datetime, m: RegexMatch, t: Time) -> Optional[Recu
     days = list(set(days))
     days.sort(key=lambda x: x.dt)
 
-    return RecurringArray(rec_1=Recurring('weekly', 1, days[0], days[0]),
-                          rec_2=Recurring('weekly', 1, days[1], days[1]),
-                          rec_3=Recurring('weekly', 1, days[2], days[2]),
-                          rec_4=Recurring('weekly', 1, days[3], days[3]),
-                          rec_5=Recurring('weekly', 1, days[4], days[4]),
+    return RecurringArray(rec_1=Recurring(RecurringFrequency.WEEKLY.value, 1, days[0], days[0]),
+                          rec_2=Recurring(RecurringFrequency.WEEKLY.value, 1, days[1], days[1]),
+                          rec_3=Recurring(RecurringFrequency.WEEKLY.value, 1, days[2], days[2]),
+                          rec_4=Recurring(RecurringFrequency.WEEKLY.value, 1, days[3], days[3]),
+                          rec_5=Recurring(RecurringFrequency.WEEKLY.value, 1, days[4], days[4]),
                           )
 
 
@@ -1364,11 +1364,11 @@ def ruleRecurringWeekdays2(ts: datetime, t: Time, m: RegexMatch) -> Optional[Rec
     days = list(set(days))
     days.sort(key=lambda x: x.dt)
 
-    return RecurringArray(rec_1=Recurring('weekly', 1, days[0], days[0]),
-                          rec_2=Recurring('weekly', 1, days[1], days[1]),
-                          rec_3=Recurring('weekly', 1, days[2], days[2]),
-                          rec_4=Recurring('weekly', 1, days[3], days[3]),
-                          rec_5=Recurring('weekly', 1, days[4], days[4]),
+    return RecurringArray(rec_1=Recurring(RecurringFrequency.WEEKLY.value, 1, days[0], days[0]),
+                          rec_2=Recurring(RecurringFrequency.WEEKLY.value, 1, days[1], days[1]),
+                          rec_3=Recurring(RecurringFrequency.WEEKLY.value, 1, days[2], days[2]),
+                          rec_4=Recurring(RecurringFrequency.WEEKLY.value, 1, days[3], days[3]),
+                          rec_5=Recurring(RecurringFrequency.WEEKLY.value, 1, days[4], days[4]),
                           )
 
 

@@ -1,6 +1,7 @@
 from datetime import datetime
 from typing import Any, Dict, Optional, Tuple, Type, TypeVar
 from dateutil.relativedelta import relativedelta
+from dateutil.rrule import rrule, YEARLY, MONTHLY, WEEKLY, DAILY
 
 import regex
 from regex import Regex
@@ -557,10 +558,10 @@ class Duration(Artifact):
 
 @enum.unique
 class RecurringFrequency(enum.Enum):
-    DAILY = "daily"
-    WEEKLY = "weekly"
-    MONTHLY = "monthly"
-    YEARLY = "yearly"
+    DAILY = "DAILY"
+    WEEKLY = "WEEKLY"
+    MONTHLY = "MONTHLY"
+    YEARLY = "YEARLY"
 
 
 class Recurring(Artifact):
@@ -577,6 +578,10 @@ class Recurring(Artifact):
         self.end_time = end_time
         self.frequency = frequency
         self.interval = interval
+        self.frequency_map = {RecurringFrequency.DAILY.value: DAILY,
+                              RecurringFrequency.WEEKLY.value: WEEKLY,
+                              RecurringFrequency.MONTHLY.value: MONTHLY,
+                              RecurringFrequency.YEARLY.value: YEARLY}
 
     def __str__(self) -> str:
         return "{} {} {} {}".format(self.frequency, self.interval, self.start_time, self.end_time)
@@ -601,6 +606,10 @@ class Recurring(Artifact):
             return False
         else:
             return True
+
+    def to_rrule(self) -> rrule:
+        r_rule = rrule(freq=self.frequency_map[self.frequency], count=self.interval, dtstart=self.start_time.dt)
+        return r_rule.__str__()
 
 
 class RecurringArray(Artifact):
