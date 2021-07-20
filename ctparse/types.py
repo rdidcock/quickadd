@@ -608,7 +608,7 @@ class Recurring(Artifact):
             return True
 
     def to_rrule(self) -> rrule:
-        r_rule = rrule(freq=self.frequency_map[self.frequency], count=self.interval, dtstart=self.start_time.dt)
+        r_rule = rrule(freq=self.frequency_map[self.frequency], count=self.interval)
         return r_rule.__str__()
 
 
