@@ -1070,7 +1070,7 @@ _recurring_dows = [
     ("mon", r"\bmontags\b|\bmondays\b|\bmons\.?\b"),
     ("tue", r"\bdie?nstags\b|\bdies\.?\b|\btuesdays\b|\btues\.?\b"),
     ("wed", r"\bmittwochs\b|\bmis\.?\b|\bwednesdays\b|\bweds\.?\b"),
-    ("thu", r"\bdonn?erstags\b|\bdons\.?\b|\bthursdays\b|\bthurs\.?\b|\bthu\b"),
+    ("thu", r"\bdonn?erstags\b|\bdons\.?\b|\bthursdays\b|\bthurs\.?\b"),
     ("fri", r"\bfreitags\b|\bfridays\b|\bfris\.?\b"),
     ("sat", r"\bsamstags\b|\bsonnabends\b|\bsaturdays\b|\bsats\.?\b"),
     ("sun", r"\bsonntags\b|\bsos\.?\b|\bsundays\b|\bsuns\.?\b"),
