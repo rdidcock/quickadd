@@ -5,7 +5,7 @@ quickadd built on ctparse_
 
 Upgrades
 
-Recurring events
+**Recurring events**
 
 
 .. code:: python
@@ -15,7 +15,15 @@ Recurring events
     Out[3]: Recurring[5-21]{weekly 1 2021-04-15 16:00 (X/X) 2021-04-15 16:00 (X/X)}
     
 
-Dumb NER for subject 
+- rrule support 
+
+.. code:: python
+
+    r.resolution.to_rrule()
+    Out[4]: 'RRULE:FREQ=DAILY;COUNT=1'
+    
+
+**Dumb NER for subject**
 
 
 .. code:: python
@@ -25,7 +33,7 @@ Dumb NER for subject
     Out[2]: 'beers and burgers'
     
     
-Label extraction
+**Label extraction**
 
 
 .. code:: python
