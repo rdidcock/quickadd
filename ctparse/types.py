@@ -609,7 +609,8 @@ class Recurring(Artifact):
 
     def to_rrule(self) -> rrule:
         r_rule = rrule(freq=self.frequency_map[self.frequency], count=self.interval)
-        return r_rule.__str__()
+        r_rule = r_rule.__str__().split('\n')[1]
+        return r_rule
 
 
 class RecurringArray(Artifact):
