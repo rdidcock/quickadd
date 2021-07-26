@@ -40,7 +40,7 @@ class CTParse:
         production: Tuple[Union[int, str], ...],
         score: float,
         subject: str,
-        labels: str,
+        # labels: str, #TODO v2
     ) -> None:
         """A possible parse returned by ctparse.
 
@@ -54,15 +54,14 @@ class CTParse:
         self.production = production
         self.score = score
         self.subject = subject
-        self.labels = labels
+        # self.labels = labels #TODO v2
 
     def __repr__(self) -> str:
-        return "CTParse({}, {}, {}, {}, {})".format(
-            self.resolution, self.production, self.score, self.subject, self.labels
-        )
+        return "CTParse({}, {}, {}, {})".format( #,{}
+            self.resolution, self.production, self.score, self.subject) #, self.labels)
 
     def __str__(self) -> str:
-        return "{} s={:.3f} p={} sb={} lbl={}".format(self.resolution, self.score, self.production, self.subject, self.labels)
+        return "{} s={:.3f} p={} sb={}".format(self.resolution, self.score, self.production, self.subject) #, self.labels) #lbl={}
 
 
 def ctparse(
@@ -116,10 +115,10 @@ def ctparse(
         # TODO: this way of testing a failure to find a match is a bit clunky with types
         if len(parsed_list) == 0 or (len(parsed_list) == 1 and parsed_list[0] is None):
             # logger.warning('Failed to produce result for "{}"'.format(txt))
-            labels = _get_labels(txt)
-            txt = re.sub('#[a-zA-Z0-9_-]+', '', txt).strip()
+            # labels = _get_labels(txt)
+            # txt = re.sub('#[a-zA-Z0-9_-]+', '', txt).strip()
             subject = txt
-            return CTParse(None, None, None, subject, labels)
+            return CTParse(None, None, None, subject)#, labels)
         parsed_list.sort(key=lambda p: p.score)  # type: ignore
         return parsed_list[-1]
 
@@ -172,9 +171,9 @@ def _ctparse(
 
     try:
         # =========== Label extraction ===========
-        labels = _get_labels(txt)
+        # labels = _get_labels(txt)
         # clear raw text of labels so what follows works properly
-        txt = re.sub('#[a-zA-Z0-9_-]+','', txt).strip()
+        # txt = re.sub('#[a-zA-Z0-9_-]+','', txt).strip()
 
         logger.debug("=" * 80)
         logger.debug("-> matching regular expressions")
@@ -283,7 +282,7 @@ def _ctparse(
                             logger.debug(
                                 " => {}, score={:.2f}, ".format(x.__repr__(), score_x)
                             )
-                            yield CTParse(x, s.rules, score_x, subject, labels)
+                            yield CTParse(x, s.rules, score_x, subject)#, labels)
             else:
                 # new productions generated, put on stack and sort
                 # stack by highst score
