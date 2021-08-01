@@ -2,6 +2,7 @@
 quickadd built on ctparse_
 ===========================================================
 
+This is an upgraded and activately maintained fork of ctparse. Main upgrades cover new use cases (recurring) and performance improvements. 
 
 Upgrades
 ----------
