@@ -6,9 +6,9 @@ from ..rule import rule, predicate, dimension, _regex_to_join
 from ..types import Time, Duration, Interval, pod_hours, RegexMatch, DurationUnit, Recurring, RecurringFrequency, \
     RecurringArray
 
-
+# removed about, around, approx, ( the)? due to conflicts in regular sentences ("sync about their tech")
 @rule(
-    r"at|on|am|um|gegen|den|dem|der|the|ca\.?|approx\.?|about|(in|of)( the)?|around",
+    r"at|on|am|um|gegen|den|dem|der|ca\.?|(in|of)",
     dimension(Time),
 )
 def ruleAbsorbOnTime(ts: datetime, _: RegexMatch, t: Time) -> Time:
