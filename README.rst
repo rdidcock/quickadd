@@ -84,7 +84,9 @@ Capabilities
     
      "beer every friday 9-5"
     Recurring[5-21]{weekly 1 2021-05-14 09:00 (X/X) 2021-05-14 17:00 (X/X)}
-
+    
+     "beer september 24 / beer every 24.9"
+    Recurring[5-21]{YEARLY 1 2021-09-24 (X/X) 2021-09-24 (X/X)}
 
     "beer thursdays 3pm and wednesdays 4pm"
     RecurringArray[5-37]{
