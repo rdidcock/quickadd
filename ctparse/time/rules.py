@@ -1261,6 +1261,16 @@ def ruleRecurringDOW(ts: datetime, m: RegexMatch, dow: Time) -> Optional[Recurri
     return Recurring(frequency=RecurringFrequency.WEEKLY.value, interval=1, start_time=time, end_time=time)
 
 
+@rule(r"(every|each)\s*", predicate('isDOY'))
+def ruleRecurringDOY(ts: datetime, m: RegexMatch, doy: Time) -> Optional[Recurring]:
+    # every 23.9
+    dm = ts + relativedelta(month=doy.month, day=doy.day)
+    if dm <= ts:
+        dm += relativedelta(years=1)
+    time = Time(year=dm.year, month=doy.month, day=doy.day)
+    return Recurring(frequency=RecurringFrequency.YEARLY.value, interval=1, start_time=time, end_time=time)
+
+
 @rule(r"(every|each)\s*" + _rule_named_interval, predicate("isDOW"))
 def ruleRecurringIntervalDOW(ts: datetime, m: RegexMatch, dow: Time) -> Optional[Recurring]:
     # every other thursday
