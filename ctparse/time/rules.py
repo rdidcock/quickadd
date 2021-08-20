@@ -1032,8 +1032,16 @@ def IntervalDuration(ts: datetime, i: Interval, d: Duration) -> Interval:
 ######### Recurring events #########
 
 _named_interval = (
-    (2, r"2|2nd|second|other"),
-    (3, r"3|3rd|third"),
+    (2, r"2|2nd|second|other|two"),
+    (3, r"3|3rd|third|three"),
+    (4, r"4|4th|four"),
+    (5, r"5|5th|five"),
+    (6, r"6|6th|six"),
+    (7, r"7|7th|seven"),
+    (7, r"8|8th|eight"),
+    (9, r"9|9th|nine"),
+    (10, r"10|10th|ten"),
+    (11, r"11|11th|eleven"),
 )
 
 _rule_named_interval = "|".join(
@@ -1263,7 +1271,7 @@ def ruleRecurringDOW(ts: datetime, m: RegexMatch, dow: Time) -> Optional[Recurri
 
 @rule(r"(every|each)\s*", predicate('isDOY'))
 def ruleRecurringDOY(ts: datetime, m: RegexMatch, doy: Time) -> Optional[Recurring]:
-    # every 23.9
+    # every 23.9 / every september 3rd
     dm = ts + relativedelta(month=doy.month, day=doy.day)
     if dm <= ts:
         dm += relativedelta(years=1)
