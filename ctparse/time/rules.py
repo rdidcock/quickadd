@@ -811,7 +811,7 @@ _rule_named_number = r"({})\s*".format(_rule_named_number)
 _durations = [
     (DurationUnit.NIGHTS, r"\bn[aä]chte?\b|\bnights?\b|\b[üu]bernachtung\b"),
     (DurationUnit.DAYS, r"\btage?\b|\bdays?\b|\bd\b"),
-    (DurationUnit.MINUTES, r"\bm(inute[ns]?)?\b"),
+    (DurationUnit.MINUTES, r"\bm(inute[ns]?)?\b|\bmins?\b"),
     (DurationUnit.HOURS, r"\bstunden?\b|\bh(ours?)?\b|\bh\b|\bhrs?\b"),
     (DurationUnit.WEEKS, r"\bweeks?\b|\bwochen?\b|\bw\b"),
     (DurationUnit.MONTHS, r"\bmonate?\b|\bmonths?\b"),
