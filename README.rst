@@ -25,7 +25,7 @@ Upgrades
     Out[4]: 'RRULE:FREQ=DAILY;COUNT=1'
     
 
-**Subject Extraction**
+**Subject extraction**
 
 
 .. code:: python
