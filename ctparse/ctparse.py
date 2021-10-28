@@ -173,7 +173,7 @@ def _ctparse(
         # =========== Label extraction ===========
         labels = _get_labels(txt)
         # clear raw text of labels so what follows works properly
-        txt = re.sub('#[a-zA-Z0-9_-]+','', txt).strip()
+        txt = re.sub('/(#[a-zA-Z0-9\-_:/.]+)/g','', txt).strip()
 
         logger.debug("=" * 80)
         logger.debug("-> matching regular expressions")
@@ -211,18 +211,31 @@ def _ctparse(
         stack = stack[-max_stack_depth:]
         logger.debug("stack length after max stack depth limit: {}".format(len(stack)))
 
-        # ======================== DUMB-SUBJECT-NER ========================
+        # ======================== SUBJECT-EXTRACTION ========================
         # get subject by extracting regex stack from raw text
         regex_matches = [match.prod for match in stack]
         regex_matches = [product.match.captures() for tuple in regex_matches for product in tuple]
         regex_matches = [match.split() for i in regex_matches for match in i]
         regex_matches = list(chain.from_iterable(regex_matches))
 
-        raw = re.split(r'[\s-]+', txt)
+        # "acr-11" edge case
+        s = re.search(r'\b[a-z]+\b-\d+[a-z]*', txt)
+        if s:
+            raw = re.split(r'[\s]+', txt)
+        else:
+            raw = re.split(r'[\s-]+', txt)
 
         # subject = list(set(raw) - set(matches)) # doesn't preserve order, but more efficient
         subject = [i for i in raw if i not in regex_matches]
         subject = ' '.join(subject)
+
+        # remove subject from txt so there's no FP parse
+        if subject and subject in txt:
+            txt = subject.replace(txt,'')
+
+            # reset stack if txt is 0
+            if len(txt) == 0:
+                stack = []
         # ===========================================================
 
         # track what has been added to the stack and do not add again
