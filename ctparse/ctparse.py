@@ -116,7 +116,7 @@ def ctparse(
         if len(parsed_list) == 0 or (len(parsed_list) == 1 and parsed_list[0] is None):
             # logger.warning('Failed to produce result for "{}"'.format(txt))
             labels = _get_labels(txt)
-            txt = re.sub('#[a-zA-Z0-9_-]+', '', txt).strip()
+            txt = re.sub('#[a-zA-Z0-9\-_:/.]+', '', txt).strip()
             subject = txt
             return CTParse(None, None, None, subject, labels)
         parsed_list.sort(key=lambda p: p.score)  # type: ignore
@@ -173,7 +173,7 @@ def _ctparse(
         # =========== Label extraction ===========
         labels = _get_labels(txt)
         # clear raw text of labels so what follows works properly
-        txt = re.sub('/(#[a-zA-Z0-9\-_:/.]+)/g','', txt).strip()
+        txt = re.sub('#[a-zA-Z0-9\-_:/.]+','', txt).strip()
 
         logger.debug("=" * 80)
         logger.debug("-> matching regular expressions")
@@ -319,7 +319,7 @@ _repl2 = regex.compile(r"(\p{Pd}|[\u2010-\u2015]|\u2043)+", regex.VERSION1)
 
 
 def _get_labels(txt: str) -> str:
-    labels = re.findall('#[^\d][a-zA-Z0-9_-]*', txt)
+    labels = re.findall('#[a-zA-Z0-9\-_:/.]+', txt)
     labels = [label.replace("#", "") for label in labels]
     return labels
 
