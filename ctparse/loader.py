@@ -4,7 +4,6 @@ import bz2
 import logging
 import os
 import pickle
-
 from .scorer import Scorer, DummyScorer
 from .nb_scorer import NaiveBayesScorer
 
@@ -15,16 +14,28 @@ DEFAULT_MODEL_FILE = os.path.join(os.path.dirname(__file__), "models", "model.pb
 
 
 def load_default_scorer() -> Scorer:
-    """Load the scorer shipped with ctparse.
+    resource = 'model.pbz'
 
-    If the scorer is not found, the scorer defaults to `DummyScorer`.
-    """
-    if os.path.exists(DEFAULT_MODEL_FILE):
-        logger.info("Loading model from {}".format(DEFAULT_MODEL_FILE))
+    path = os.path.join(os.path.dirname(__file__), resource)
+
+    # logger.warning(path)
+    # debug
+    # logger.warning([x.name for x in pkgutil.walk_packages()])
+
+    # for exec usage
+    if os.access(path, mode=os.F_OK):
+        # d = os.path.dirname(sys.modules[package].__file__)
+        # logger.warning(os.path.join(d, resource))
+        with bz2.open(path, 'rb') as f:
+            # logger.warning(str(f))
+            mdl = pickle.load(f)
+        return NaiveBayesScorer(mdl)
+    # for non-exec usage
+    elif os.path.exists(DEFAULT_MODEL_FILE):
+        logger.info("Loading model from {} for non-exec usage".format(DEFAULT_MODEL_FILE))
         with bz2.open(DEFAULT_MODEL_FILE, "rb") as fd:
             mdl = pickle.load(fd)
         return NaiveBayesScorer(mdl)
-
     else:
         logger.warning("No model found, initializing empty scorer")
         return DummyScorer()
