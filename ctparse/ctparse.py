@@ -314,7 +314,8 @@ def _ctparse(
 
 # replace all comma, semicolon, whitespace, invisible control, opening and
 # closing brackets
-_repl1 = regex.compile(r"[,;\pZ\pC\p{Ps}\p{Pe}]+", regex.VERSION1)
+# _repl1 = regex.compile(r"[,;\pZ\pC\p{Ps}\p{Pe}]+", regex.VERSION1) # original regex
+_repl1 = regex.compile(r"[\pZ\pC]+", regex.VERSION1) # allow brackets
 _repl2 = regex.compile(r"(\p{Pd}|[\u2010-\u2015]|\u2043)+", regex.VERSION1)
 
 
