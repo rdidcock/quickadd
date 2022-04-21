@@ -47,6 +47,11 @@ def _latent_time_interval(ts: datetime, ti: Interval) -> Interval:
     if dm_from <= ts:
         dm_from += relativedelta(days=1)
         dm_to += relativedelta(days=1)
+
+    # pm-am interval overlap
+    if ti.t_from.period == "pm" and ti.t_to.period == "am":
+        dm_to += relativedelta(days=1)
+
     return Interval(
         t_from=Time(
             year=dm_from.year,

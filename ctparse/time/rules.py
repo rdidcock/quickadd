@@ -675,9 +675,6 @@ def ruleTODTOD(ts: datetime, t1: Time, _: RegexMatch, t2: Time) -> Interval:
     if not t1.period and t2.period == "am" and t1.hour > 12:
         t1.hour -= 12
         return Interval(t_from=t1, t_to=t2)
-    # pm-am interval overlap (only works for TODTOD which is not grounded to a date -> "9pm-5am", disables every ruledateinterval grounded to a date)
-    # if t1.period == "pm" and t2.period == "am":
-    #     return ruleDateInterval(ts, Time(year=ts.year,month=ts.month,day=ts.day), Interval(t_from=t1,t_to=t2))
     else:
         return Interval(t_from=t1, t_to=t2)
 
@@ -713,7 +710,6 @@ def ruleDateInterval(ts: datetime, d: Time, i: Interval) -> Optional[Interval]:
             minute=i.t_to.minute,
             POD=i.t_to.POD,
         )
-
     if t_from and t_to and t_from.dt >= t_to.dt:
         t_to_dt = t_to.dt + relativedelta(days=1)
         t_to = Time(
