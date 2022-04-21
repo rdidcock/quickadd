@@ -1,8 +1,8 @@
 ===========================================================
-quickadd built on ctparse_
+quickadd
 ===========================================================
 
-This is an upgraded and activately maintained fork of ctparse. Main upgrades cover new use cases (recurring) and performance improvements. 
+This is an upgraded and activately maintained fork of ctparse_. Main upgrades cover new use cases like recurring events and lots of performance improvements. 
 
 Upgrades
 ----------
