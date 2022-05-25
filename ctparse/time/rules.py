@@ -1349,6 +1349,24 @@ def ruleRecurringDOWDOWTime(ts: datetime, m1: RegexMatch, dow1: Time, m2: RegexM
     return RecurringArray(rec_1=rec_1, rec_2=rec_2)
 
 
+@rule(dimension(Time), r"(every|each)\s*", predicate("isDOW"), r"(and)\s*", predicate("isDOW"))
+def ruleRecurringTimeDOWDOW(ts: datetime, t: Time, m1: RegexMatch, dow1: Time, m2: RegexMatch, dow2: Time) -> Optional[Recurring]:
+    # 2pm every thursday and wednesday
+    dm = ts + relativedelta(weekday=dow1.DOW)
+    if dm <= ts:
+        dm += relativedelta(weeks=1)
+    time1 = Time(year=dm.year, month=dm.month, day=dm.day, hour=t.hour, minute=t.minute, DOW=dow1.DOW)
+    rec_1 = Recurring(frequency=RecurringFrequency.WEEKLY.value, interval=1, start_time=time1, end_time=time1)
+
+    dm2 = ts + relativedelta(weekday=dow2.DOW)
+    if dm2 <= ts:
+        dm2 += relativedelta(weeks=1)
+    time2 = Time(year=dm2.year, month=dm2.month, day=dm2.day, hour=t.hour, minute=t.minute, DOW=dow2.DOW)
+    rec_2 = Recurring(frequency=RecurringFrequency.WEEKLY.value, interval=1, start_time=time2, end_time=time2)
+
+    return RecurringArray(rec_1=rec_1, rec_2=rec_2)
+
+
 @rule(r"(weekdays|every weekday)\s*", predicate("isTOD"))
 def ruleRecurringWeekdays(ts: datetime, m: RegexMatch, t: Time) -> Optional[RecurringArray]:
     # weekdays 5-6 / every weekday 4pm
