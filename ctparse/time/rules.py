@@ -1273,7 +1273,7 @@ def ruleRecurringDOY(ts: datetime, m: RegexMatch, doy: Time) -> Optional[Recurri
     if dm <= ts:
         dm += relativedelta(years=1)
     time = Time(year=dm.year, month=doy.month, day=doy.day)
-    return Recurring(frequency=RecurringFrequency.YEARLY.value, interval=1, start_time=time, end_time=time, byday=doy.dt.weekday())
+    return Recurring(frequency=RecurringFrequency.YEARLY.value, interval=1, start_time=time, end_time=time, byday=dm.weekday())
 
 
 @rule(r"(every|each)\s*" + _rule_named_interval, predicate("isDOW"))
