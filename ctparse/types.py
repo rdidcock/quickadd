@@ -571,7 +571,7 @@ class Recurring(Artifact):
         interval: Optional[int] = None,
         start_time: Optional[Time] = None,
         end_time: Optional[Time] = None,
-        byday: Optional[int] = None,
+        byday: Optional[tuple[int,int]] = None,
     ):
         super().__init__()
         self._attrs = ['start_time', 'end_time', 'frequency', 'interval', 'byday']
@@ -586,7 +586,7 @@ class Recurring(Artifact):
         self.byday = byday
 
     def __str__(self) -> str:
-        return "{} {} {} {}".format(self.frequency, self.interval, self.start_time, self.end_time)
+        return "{} {} {} {}".format(self.frequency, self.interval, self.start_time, self.end_time, self.byday)
 
     @property
     def isRecurring(self) -> bool:
