@@ -1182,7 +1182,7 @@ def ruleRecurringTime(ts: datetime, t: Time, r: Recurring) -> Optional[Recurring
         hour=dm.hour,
         minute=dm.minute
     )
-    return Recurring(frequency=r.frequency, interval=r.interval, start_time=time, end_time=time)
+    return Recurring(frequency=r.frequency, interval=r.interval, start_time=time, end_time=time, byday=r.byday)
 
 
 @rule(dimension(Recurring), dimension(Time))
@@ -1202,7 +1202,8 @@ def ruleRecurringTime2(ts: datetime, r: Recurring, t: Time) -> Optional[Recurrin
         hour=dm.hour,
         minute=dm.minute
     )
-    return Recurring(frequency=r.frequency, interval=r.interval, start_time=time, end_time=time)
+
+    return Recurring(frequency=r.frequency, interval=r.interval, start_time=time, end_time=time, byday=r.byday)
 
 
 @rule(dimension(Recurring), predicate("isTimeInterval"))
@@ -1227,7 +1228,7 @@ def ruleRecurringTimeInterval(ts: datetime, r: Recurring, t: Interval) -> Option
         minute=t.t_to.minute
     )
 
-    return Recurring(frequency=r.frequency, interval=r.interval, start_time=start_time, end_time=end_time)
+    return Recurring(frequency=r.frequency, interval=r.interval, start_time=start_time, end_time=end_time, byday=r.byday)
 
 
 @rule(predicate("isTimeInterval"), dimension(Recurring))
@@ -1252,7 +1253,7 @@ def ruleRecurringTimeInterval2(ts: datetime, t: Interval, r: Recurring) -> Optio
         minute=t.t_to.minute
     )
 
-    return Recurring(frequency=r.frequency, interval=r.interval, start_time=start_time, end_time=end_time)
+    return Recurring(frequency=r.frequency, interval=r.interval, start_time=start_time, end_time=end_time, byday=r.byday)
 
 
 @rule(r"(every|each)\s*", predicate("isDOW"))
@@ -1262,7 +1263,7 @@ def ruleRecurringDOW(ts: datetime, m: RegexMatch, dow: Time) -> Optional[Recurri
     if dm <= ts:
         dm += relativedelta(weeks=1)
     time = Time(year=dm.year, month=dm.month, day=dm.day, DOW=dow.DOW)
-    return Recurring(frequency=RecurringFrequency.WEEKLY.value, interval=1, start_time=time, end_time=time)
+    return Recurring(frequency=RecurringFrequency.WEEKLY.value, interval=1, start_time=time, end_time=time, byday=dm.weekday())
 
 
 @rule(r"(every|each)\s*", predicate('isDOY'))
@@ -1272,7 +1273,7 @@ def ruleRecurringDOY(ts: datetime, m: RegexMatch, doy: Time) -> Optional[Recurri
     if dm <= ts:
         dm += relativedelta(years=1)
     time = Time(year=dm.year, month=doy.month, day=doy.day)
-    return Recurring(frequency=RecurringFrequency.YEARLY.value, interval=1, start_time=time, end_time=time)
+    return Recurring(frequency=RecurringFrequency.YEARLY.value, interval=1, start_time=time, end_time=time, byday=doy.dt.weekday())
 
 
 @rule(r"(every|each)\s*" + _rule_named_interval, predicate("isDOW"))
@@ -1287,7 +1288,7 @@ def ruleRecurringIntervalDOW(ts: datetime, m: RegexMatch, dow: Time) -> Optional
     if dm <= ts:
         dm += relativedelta(weeks=1)
     time = Time(year=dm.year, month=dm.month, day=dm.day, DOW=dow.DOW)
-    return Recurring(frequency=RecurringFrequency.WEEKLY.value, interval=itv, start_time=time, end_time=time)
+    return Recurring(frequency=RecurringFrequency.WEEKLY.value, interval=itv, start_time=time, end_time=time, byday=dm.weekday())
 
 
 @rule(_rule_recurring_dows)
@@ -1300,16 +1301,14 @@ def ruleRecurringDOWS(ts: datetime, m: RegexMatch) -> Optional[Recurring]:
             if dm <= ts:
                 dm += relativedelta(weeks=1)
             time = Time(year=dm.year, month=dm.month, day=dm.day, DOW=dow)
-            return Recurring(frequency=RecurringFrequency.WEEKLY.value, interval=1, start_time=time, end_time=time)
+            return Recurring(frequency=RecurringFrequency.WEEKLY.value, interval=1, start_time=time, end_time=time, byday=dm.weekday())
     return None
 
 
 @rule(dimension(Recurring), r"(and)\s*", dimension(Recurring))
 def ruleRecurringSimpleDOWDOW(ts: datetime, rec1: Recurring, m: RegexMatch, rec2: Recurring) -> Optional[Recurring]:
     # thursdays and wednesdays
-    rec_1 = rec1
-    rec_2 = rec2
-    return RecurringArray(rec_1=rec_1, rec_2=rec_2)
+    return Recurring(frequency=rec1.frequency, interval=rec1.interval, start_time=rec1.start_time, end_time=rec1.end_time, byday=(rec1.start_time.dt.weekday(), rec2.start_time.dt.weekday()))
 
 
 @rule(r"(every|each)\s*", predicate("isDOW"), r"(and)\s*", predicate("isDOW"))
@@ -1319,147 +1318,49 @@ def ruleRecurringDOWDOW(ts: datetime, m1: RegexMatch, dow1: Time, m2: RegexMatch
     if dm <= ts:
         dm += relativedelta(weeks=1)
     time1 = Time(year=dm.year, month=dm.month, day=dm.day, DOW=dow1.DOW)
-    rec_1 = Recurring(frequency=RecurringFrequency.WEEKLY.value, interval=1, start_time=time1, end_time=time1)
 
     dm2 = ts + relativedelta(weekday=dow2.DOW)
     if dm2 <= ts:
         dm2 += relativedelta(weeks=1)
     time2 = Time(year=dm2.year, month=dm2.month, day=dm2.day, DOW=dow2.DOW)
-    rec_2 = Recurring(frequency=RecurringFrequency.WEEKLY.value, interval=1, start_time=time2, end_time=time2)
 
-    return RecurringArray(rec_1=rec_1, rec_2=rec_2)
-
-
-@rule(r"(every|each)\s*", predicate("isDOW"), r"(and)\s*", predicate("isDOW"), dimension(Time))
-def ruleRecurringDOWDOWTime(ts: datetime, m1: RegexMatch, dow1: Time, m2: RegexMatch, dow2: Time, t: Time) -> Optional[Recurring]:
-    # every thursday and wednesday at 2pm
-    dm = ts + relativedelta(weekday=dow1.DOW)
-    if dm <= ts:
-        dm += relativedelta(weeks=1)
-    time1 = Time(year=dm.year, month=dm.month, day=dm.day, hour=t.hour, minute=t.minute, DOW=dow1.DOW)
-    rec_1 = Recurring(frequency=RecurringFrequency.WEEKLY.value, interval=1, start_time=time1, end_time=time1)
-
-    dm2 = ts + relativedelta(weekday=dow2.DOW)
-    if dm2 <= ts:
-        dm2 += relativedelta(weeks=1)
-    time2 = Time(year=dm2.year, month=dm2.month, day=dm2.day, hour=t.hour, minute=t.minute, DOW=dow2.DOW)
-    rec_2 = Recurring(frequency=RecurringFrequency.WEEKLY.value, interval=1, start_time=time2, end_time=time2)
-
-    return RecurringArray(rec_1=rec_1, rec_2=rec_2)
-
-
-@rule(dimension(Time), r"(every|each)\s*", predicate("isDOW"), r"(and)\s*", predicate("isDOW"))
-def ruleRecurringTimeDOWDOW(ts: datetime, t: Time, m1: RegexMatch, dow1: Time, m2: RegexMatch, dow2: Time) -> Optional[Recurring]:
-    # 2pm every thursday and wednesday
-    dm = ts + relativedelta(weekday=dow1.DOW)
-    if dm <= ts:
-        dm += relativedelta(weeks=1)
-    time1 = Time(year=dm.year, month=dm.month, day=dm.day, hour=t.hour, minute=t.minute, DOW=dow1.DOW)
-    rec_1 = Recurring(frequency=RecurringFrequency.WEEKLY.value, interval=1, start_time=time1, end_time=time1)
-
-    dm2 = ts + relativedelta(weekday=dow2.DOW)
-    if dm2 <= ts:
-        dm2 += relativedelta(weeks=1)
-    time2 = Time(year=dm2.year, month=dm2.month, day=dm2.day, hour=t.hour, minute=t.minute, DOW=dow2.DOW)
-    rec_2 = Recurring(frequency=RecurringFrequency.WEEKLY.value, interval=1, start_time=time2, end_time=time2)
-
-    return RecurringArray(rec_1=rec_1, rec_2=rec_2)
-
-
-@rule(r"(every|each)\s*", predicate("isDOW"), r"(and)\s*", predicate("isDOW"), dimension(Interval))
-def ruleRecurringDOWDOWInterval(ts: datetime, m1: RegexMatch, dow1: Time, m2: RegexMatch, dow2: Time, t: Interval) -> Optional[Recurring]:
-    # coding every thursday and wednesday 2-3pm
-    dm = ts + relativedelta(weekday=dow1.DOW)
-    if dm <= ts:
-        dm += relativedelta(weeks=1)
-    start_time1 = Time(year=dm.year, month=dm.month, day=dm.day, hour=t.t_from.hour, minute=t.t_from.minute, DOW=dow1.DOW)
-    end_time1 = Time(year=dm.year, month=dm.month, day=dm.day, hour=t.t_to.hour, minute=t.t_to.minute, DOW=dow1.DOW)
-    rec_1 = Recurring(frequency=RecurringFrequency.WEEKLY.value, interval=1, start_time=start_time1, end_time=end_time1)
-
-    dm2 = ts + relativedelta(weekday=dow2.DOW)
-    if dm2 <= ts:
-        dm2 += relativedelta(weeks=1)
-    start_time2 = Time(year=dm2.year, month=dm2.month, day=dm2.day, hour=t.t_from.hour, minute=t.t_from.minute, DOW=dow2.DOW)
-    end_time2 = Time(year=dm2.year, month=dm2.month, day=dm2.day, hour=t.t_to.hour, minute=t.t_to.minute, DOW=dow2.DOW)
-    rec_2 = Recurring(frequency=RecurringFrequency.WEEKLY.value, interval=1, start_time=start_time2, end_time=end_time2)
-
-    return RecurringArray(rec_1=rec_1, rec_2=rec_2)
-
-
-@rule(dimension(Interval), r"(every|each)\s*", predicate("isDOW"), r"(and)\s*", predicate("isDOW"))
-def ruleRecurringIntervalDOWDOW(ts: datetime, t: Interval, m1: RegexMatch, dow1: Time, m2: RegexMatch, dow2: Time) -> Optional[Recurring]:
-    # 2-3pm every thursday and wednesday
-    dm = ts + relativedelta(weekday=dow1.DOW)
-    if dm <= ts:
-        dm += relativedelta(weeks=1)
-    start_time1 = Time(year=dm.year, month=dm.month, day=dm.day, hour=t.t_from.hour, minute=t.t_from.minute, DOW=dow1.DOW)
-    end_time1 = Time(year=dm.year, month=dm.month, day=dm.day, hour=t.t_to.hour, minute=t.t_to.minute, DOW=dow1.DOW)
-    rec_1 = Recurring(frequency=RecurringFrequency.WEEKLY.value, interval=1, start_time=start_time1, end_time=end_time1)
-
-    dm2 = ts + relativedelta(weekday=dow2.DOW)
-    if dm2 <= ts:
-        dm2 += relativedelta(weeks=1)
-    start_time2 = Time(year=dm2.year, month=dm2.month, day=dm2.day, hour=t.t_from.hour, minute=t.t_from.minute, DOW=dow2.DOW)
-    end_time2 = Time(year=dm2.year, month=dm2.month, day=dm2.day, hour=t.t_to.hour, minute=t.t_to.minute, DOW=dow2.DOW)
-    rec_2 = Recurring(frequency=RecurringFrequency.WEEKLY.value, interval=1, start_time=start_time2, end_time=end_time2)
-
-    return RecurringArray(rec_1=rec_1, rec_2=rec_2)
+    return Recurring(frequency=RecurringFrequency.WEEKLY.value, interval=1, start_time=time1, end_time=time1, byday=(time1.dt.weekday(), time2.dt.weekday()))
 
 
 @rule(r"(weekdays|every weekday)\s*", predicate("isTOD"))
 def ruleRecurringWeekdays(ts: datetime, m: RegexMatch, t: Time) -> Optional[RecurringArray]:
     # weekdays 5-6 / every weekday 4pm
     dows = (0, 1, 2, 3, 4)
-    days = []
 
     for dow in dows:
         dm = ts + relativedelta(weekday=dow)
         if dm <= ts:
             dm += relativedelta(weeks=1)
             time = Time(year=dm.year, month=dm.month, day=dm.day, hour=t.hour, minute=t.minute)
-            days.append(time)
         if dm >= ts:
             dm += relativedelta(weekday=dow)
             time = Time(year=dm.year, month=dm.month, day=dm.day, hour=t.hour, minute=t.minute)
-            days.append(time)
 
-    days = list(set(days))
-    days.sort(key=lambda x: x.dt)
-
-    return RecurringArray(rec_1=Recurring(RecurringFrequency.WEEKLY.value, 1, days[0], days[0]),
-                          rec_2=Recurring(RecurringFrequency.WEEKLY.value, 1, days[1], days[1]),
-                          rec_3=Recurring(RecurringFrequency.WEEKLY.value, 1, days[2], days[2]),
-                          rec_4=Recurring(RecurringFrequency.WEEKLY.value, 1, days[3], days[3]),
-                          rec_5=Recurring(RecurringFrequency.WEEKLY.value, 1, days[4], days[4]),
-                          )
+    return Recurring(frequency=RecurringFrequency.WEEKLY.value, interval=1, start_time=time, end_time=time,
+                     byday=dows)
 
 
 @rule(predicate("isTOD"), r"(weekdays|every weekday)\s*")
 def ruleRecurringWeekdays2(ts: datetime, t: Time, m: RegexMatch) -> Optional[RecurringArray]:
     # 5-6 weekdays / 10am every weekday
     dows = (0, 1, 2, 3, 4)
-    days = []
 
     for dow in dows:
         dm = ts + relativedelta(weekday=dow)
         if dm <= ts:
             dm += relativedelta(weeks=1)
             time = Time(year=dm.year, month=dm.month, day=dm.day, hour=t.hour, minute=t.minute)
-            days.append(time)
         if dm >= ts:
             dm += relativedelta(weekday=dow)
             time = Time(year=dm.year, month=dm.month, day=dm.day, hour=t.hour, minute=t.minute)
-            days.append(time)
 
-    days = list(set(days))
-    days.sort(key=lambda x: x.dt)
-
-    return RecurringArray(rec_1=Recurring(RecurringFrequency.WEEKLY.value, 1, days[0], days[0]),
-                          rec_2=Recurring(RecurringFrequency.WEEKLY.value, 1, days[1], days[1]),
-                          rec_3=Recurring(RecurringFrequency.WEEKLY.value, 1, days[2], days[2]),
-                          rec_4=Recurring(RecurringFrequency.WEEKLY.value, 1, days[3], days[3]),
-                          rec_5=Recurring(RecurringFrequency.WEEKLY.value, 1, days[4], days[4]),
-                          )
+    return Recurring(frequency=RecurringFrequency.WEEKLY.value, interval=1, start_time=time, end_time=time,
+                     byday=dows)
 
 
 @rule(dimension(Duration), dimension(Recurring))
@@ -1471,4 +1372,4 @@ def ruleDurationRecurring(ts: datetime, d: Duration, r: Recurring) -> Optional[R
         month=dur.month,
         day=dur.day
     )
-    return Recurring(frequency=r.frequency, interval=r.interval, start_time=time, end_time=time)
+    return Recurring(frequency=r.frequency, interval=r.interval, start_time=time, end_time=time, byday=dur.dt.weekday())

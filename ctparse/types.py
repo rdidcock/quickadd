@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Any, Dict, Optional, Tuple, Type, TypeVar
+from typing import Any, Dict, Optional, Tuple, Type, TypeVar, List
 from dateutil.relativedelta import relativedelta
 from dateutil.rrule import rrule, YEARLY, MONTHLY, WEEKLY, DAILY
 
@@ -571,9 +571,10 @@ class Recurring(Artifact):
         interval: Optional[int] = None,
         start_time: Optional[Time] = None,
         end_time: Optional[Time] = None,
+        byday: Optional[tuple[int,int]] = None,
     ):
         super().__init__()
-        self._attrs = ['start_time', 'end_time', 'frequency', 'interval']
+        self._attrs = ['start_time', 'end_time', 'frequency', 'interval', 'byday']
         self.start_time = start_time
         self.end_time = end_time
         self.frequency = frequency
@@ -582,9 +583,10 @@ class Recurring(Artifact):
                               RecurringFrequency.WEEKLY.value: WEEKLY,
                               RecurringFrequency.MONTHLY.value: MONTHLY,
                               RecurringFrequency.YEARLY.value: YEARLY}
+        self.byday = byday
 
     def __str__(self) -> str:
-        return "{} {} {} {}".format(self.frequency, self.interval, self.start_time, self.end_time)
+        return "{} {} {} {}".format(self.frequency, self.interval, self.start_time, self.end_time, self.byday)
 
     @property
     def isRecurring(self) -> bool:
@@ -608,7 +610,7 @@ class Recurring(Artifact):
             return True
 
     def to_rrule(self) -> rrule:
-        r_rule = rrule(freq=self.frequency_map[self.frequency], interval=self.interval)
+        r_rule = rrule(freq=self.frequency_map[self.frequency], interval=self.interval, byweekday=self.byday)
         r_rule = r_rule.__str__().split('\n')[1]
         return r_rule
 
