@@ -412,7 +412,13 @@ def ruleDDMMYYYY(ts: datetime, m: RegexMatch) -> Time:
         for i, (name, _) in enumerate(_months):
             if m.match.group(name):
                 month = i + 1
-    return Time(year=y, month=month, day=int(m.match.group("day")))
+
+    time = Time(year=y, month=month, day=int(m.match.group("day")))
+    try:
+        time.dt
+        return time
+    except ValueError:
+        return None
 
 
 def _is_valid_military_time(ts: datetime, t: Time) -> bool:
