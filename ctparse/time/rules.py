@@ -219,7 +219,7 @@ def ruleNow(ts: datetime, pm_bias: bool, _: RegexMatch) -> Time:
     )
 
 
-@rule(r"morgen|tmrw?|tomm?or?rows?")
+@rule(r"morgen|tmrw?|tom|tomm?or?rows?")
 def ruleTomorrow(ts: datetime, pm_bias: bool, _: RegexMatch) -> Time:
     dm = ts + relativedelta(days=1)
     return Time(year=dm.year, month=dm.month, day=dm.day)
