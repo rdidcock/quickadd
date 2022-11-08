@@ -73,6 +73,7 @@ class PartialParse:
     def apply_rule(
         self,
         ts: datetime,
+        pm_bias: bool,
         rule: ProductionRule,
         rule_name: Union[str, int],
         match: Tuple[int, int],
@@ -85,11 +86,12 @@ class PartialParse:
         and the score.
 
         :param ts: reference time
+        :param pm_bias: bias option bool
         :param rule: a tuple where the first element is the production rule to apply
         :param rule_name: the name of the rule
         :param match: the start and end index of the parameters that the rule needs.
         """
-        prod = rule(ts, *self.prod[match[0] : match[1]])
+        prod = rule(ts, pm_bias, *self.prod[match[0]: match[1]])
 
         if prod is not None:
             pp = PartialParse(

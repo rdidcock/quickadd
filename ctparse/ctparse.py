@@ -67,6 +67,7 @@ class CTParse:
 def ctparse(
     txt: str,
     ts: Optional[datetime] = None,
+    pm_bias: Optional[bool] = True,
     timeout: Union[int, float] = 1.0,
     debug: bool = False,
     relative_match_len: float = 1.0,
@@ -78,6 +79,7 @@ def ctparse(
 
     :param ts: reference time
     :type ts: datetime.datetime
+    :param pm_bias: pm bias on or off / 24h or 12h format
     :param timeout: timeout for parsing in seconds; timeout=0
                     indicates no timeout
     :type timeout: float
@@ -100,6 +102,7 @@ def ctparse(
     parsed = ctparse_gen(
         txt,
         ts,
+        pm_bias,
         timeout=timeout,
         relative_match_len=relative_match_len,
         max_stack_depth=max_stack_depth,
@@ -126,6 +129,7 @@ def ctparse(
 def ctparse_gen(
     txt: str,
     ts: Optional[datetime] = None,
+    pm_bias: Optional[bool] = True,
     timeout: Union[int, float] = 1.0,
     relative_match_len: float = 1.0,
     max_stack_depth: int = 10,
@@ -144,6 +148,7 @@ def ctparse_gen(
     for parse in _ctparse(
         _preprocess_string(txt),
         ts,
+        pm_bias,
         timeout=timeout,
         relative_match_len=relative_match_len,
         max_stack_depth=max_stack_depth,
@@ -162,6 +167,7 @@ def ctparse_gen(
 def _ctparse(
     txt: str,
     ts: datetime,
+    pm_bias: bool,
     timeout: float,
     relative_match_len: float,
     max_stack_depth: int,
@@ -231,7 +237,7 @@ def _ctparse(
 
         # remove subject from txt so there's no FP parse
         if subject and subject in txt:
-            txt = subject.replace(txt,'')
+            txt = subject.replace(txt, '')
 
             # reset stack if txt is 0
             if len(txt) == 0:
@@ -252,7 +258,7 @@ def _ctparse(
             for r_name, r in s.applicable_rules.items():
                 for r_match in _match_rule(s.prod, r[1]):
                     # apply production part of rule
-                    new_s = s.apply_rule(ts, r[0], r_name, r_match)
+                    new_s = s.apply_rule(ts, pm_bias, r[0], r_name, r_match)
 
                     # TODO: We should store scores separately from the production itself
                     # because the score may depend on the text and the ts
