@@ -383,7 +383,7 @@ def ruleDDMM(ts: datetime, pm_bias: bool, m: RegexMatch) -> Time:
 
 
 @rule(
-    r"(?<!\d|\.)((?P<month>(?&_month))|(?P<named_month>({})))[/\-]"
+    r"(?<!\d|\.)((?P<month>(?&_month))|(?P<named_month>({})))[\./\-]"
     r"(?P<day>(?&_day))"
     r"(?!\d|am|\s*pm)".format(_rule_months)
 )
@@ -486,10 +486,10 @@ def ruleHHMMmilitary(ts: datetime, pm_bias: bool, m: RegexMatch) -> Optional[Tim
 
 
 @rule(
-    r"(?<!\d|\.)"  # We don't start matching with another number, or a dot
+    r"(?<!\d)"  # We don't start matching with another number, or a dot
     r"(?P<hour>(?&_hour))"  # We certainly match an hour
     # We try to match also the minute
-    r"((?P<sep>:|uhr|h|\.)(?P<minute>(?&_minute)))?"
+    r"((?P<sep>:|uhr|h|)(?P<minute>(?&_minute)))?"
     r"\s*(?P<clock>uhr|h)?"  # We match uhr with no minute
     r"(?P<ampm>\s*[ap]\.?m\.?)?"  # AM PM
     r"(?!\d)"
