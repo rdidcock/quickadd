@@ -17,7 +17,7 @@ class Artifact:
         self._attrs = ["mstart", "mend"]
 
     def update_span(self: T, *args: "Artifact") -> T:
-        self.mstart = args[1].mstart
+        self.mstart = args[2].mstart
         self.mend = args[-1].mend
         return self
 

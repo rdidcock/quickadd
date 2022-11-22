@@ -74,6 +74,7 @@ class PartialParse:
         self,
         ts: datetime,
         pm_bias: bool,
+        date_format: str,
         rule: ProductionRule,
         rule_name: Union[str, int],
         match: Tuple[int, int],
@@ -87,11 +88,12 @@ class PartialParse:
 
         :param ts: reference time
         :param pm_bias: bias option bool
+        :param date_format: us / eu date format
         :param rule: a tuple where the first element is the production rule to apply
         :param rule_name: the name of the rule
         :param match: the start and end index of the parameters that the rule needs.
         """
-        prod = rule(ts, pm_bias, *self.prod[match[0]: match[1]])
+        prod = rule(ts, pm_bias, date_format, *self.prod[match[0]: match[1]])
 
         if prod is not None:
             pp = PartialParse(
