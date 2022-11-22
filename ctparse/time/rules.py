@@ -382,7 +382,7 @@ def ruleDDMM(ts: datetime, pm_bias: bool, date_format: str, m: RegexMatch) -> Ti
     day = int(m.match.group("day"))
     # TODO remove the hack below and extend the DDMM and MMDD rules to be more readable and clear.
     if date_format == "US":
-        if day < 12:
+        if day <= 12:
             return Time(month=day, day=month)
 
     return Time(month=month, day=day)
