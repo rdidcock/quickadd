@@ -2,9 +2,18 @@
 quickadd
 ===========================================================
 
-This is an upgraded and activately maintained fork of ctparse_. Main upgrades cover new use cases like recurring events and lots of performance improvements. 
+quickadd is a natural language date & time parser written in python. It builds on top of ctparse_ and is an actively maintained fork. 
 
-Upgrades
+Installation
+----------
+
+With ``pip install -e git+https://github.com/Acreom/quickadd.git#egg=quickadd``
+
+
+or run ``python setup.py install`` in the root directory after forking.
+
+
+Main upgrades include:
 ----------
 
 **Recurring events**
@@ -12,12 +21,40 @@ Upgrades
 
 .. code:: python
 
+    r = ctparse("beer daily 4pm")
+    r.resolution
+    Recurring[5-14]{daily 1 2021-05-09 16:00 (X/X) 2021-05-09 16:00 (X/X)}
+    
     r = ctparse("beer every thursday 4")
     r.resolution
-    Out[3]: Recurring[5-21]{weekly 1 2021-04-15 16:00 (X/X) 2021-04-15 16:00 (X/X)}
+    Recurring[5-21]{weekly 1 2021-04-15 16:00 (X/X) 2021-04-15 16:00 (X/X)}
     
+    r = ctparse("beer every friday 9-5")
+    r.resolution
+    Recurring[5-21]{weekly 1 2021-05-14 09:00 (X/X) 2021-05-14 17:00 (X/X)}
+    
+    r = ctparse("beer september 24 / beer every 24.9")
+    r.resolution
+    Recurring[5-21]{YEARLY 1 2021-09-24 (X/X) 2021-09-24 (X/X)}
 
-- rrule support 
+    r = ctparse("beer thursdays 3pm and wednesdays 4pm")
+    r.resolution
+    RecurringArray[5-37]{
+    Recurring instance: weekly 1 2021-05-13 15:00 (X/X) 2021-05-13 15:00 (X/X) 
+    Recurring instance: weekly 1 2021-05-12 16:00 (X/X) 2021-05-12 16:00 (X/X)
+    }
+    
+    r = ctparse("beer 9pm weekdays")
+    r.resolution
+    RecurringArray[5-17]{
+    Recurring instance: weekly 1 2021-05-10 21:00 (X/X) 2021-05-10 21:00 (X/X) 
+    Recurring instance: weekly 1 2021-05-11 21:00 (X/X) 2021-05-11 21:00 (X/X) 
+    Recurring instance: weekly 1 2021-05-12 21:00 (X/X) 2021-05-12 21:00 (X/X) 
+    Recurring instance: weekly 1 2021-05-13 21:00 (X/X) 2021-05-13 21:00 (X/X) 
+    Recurring instance: weekly 1 2021-05-14 21:00 (X/X) 2021-05-14 21:00 (X/X)}    
+
+
+rrule_ **support**
 
 .. code:: python
 
@@ -43,12 +80,68 @@ Upgrades
     r = ctparse("beers and burgers friday 8pm-9pm #fun")
     r.labels
     Out[3]: ['fun']
+
+
+**PM bias**
+
+
+.. code:: python
+
+    r = ctparse("fix the issue tmrw 2")
+    r.resolution
+    Time[14-20]{2022-11-23 14:00 (X/X)}
     
+    r = ctparse("fix the issue tmrw 2", pm_bias=False)
+    r.resolution
+    Time[14-20]{2022-11-23 02:00 (X/X)}
 
-``+`` **bunch of performance improvements**
+
+**Rules for ambigious natural language expressions** 
+
+.. code:: python
+
+    r = ctparse("code 9-5")
+    r.resolution
+    Interval[0-0]{2022-11-23 09:00 (X/X) - 2022-11-23 17:00 (X/X)}
 
 
-Capabilities
+**US/EU date format**
+
+
+.. code:: python
+
+    r = ctparse("fix the issue 5.3")
+    r.resolution
+    Time[14-17]{2023-03-05 X:X (X/X)}
+    
+    r = ctparse("fix the issue 5.3", date_format="US")
+    r.resolution
+    Time[14-17]{2023-05-03 X:X (X/X)}
+
+
+**Rule combinations** 
+
+.. code:: python
+
+    r = ctparse("beer in 3 days 4pm")
+    r.resolution
+    Time[5-18]{2021-05-12 16:00 (X/X)}
+    
+    
+    r = ctparse("beer in 3 days 4pm every week")
+    r.resolution
+    Recurring[5-29]{weekly 1 2021-05-12 16:00 (X/X) 2021-05-12 16:00 (X/X)}
+
+
+    r = ctparse("beer every friday 4-6:30pm")
+    r.resolution
+    Recurring[5-26]{WEEKLY 1 2022-11-25 16:00 (X/X) 2022-11-25 18:30 (X/X)}
+
+
+``+`` **performance improvements**
+
+
+Base Capabilities
 ----------
 | **Time** 
 
@@ -72,48 +165,6 @@ Capabilities
 
     "beer in 4 hours"
     Duration[5-15]{4 hours}
-
-
-| **Recurring** 
-
-.. code:: python
-
-    "beer daily 4pm"
-    Recurring[5-14]{daily 1 2021-05-09 16:00 (X/X) 2021-05-09 16:00 (X/X)}
-    
-    
-     "beer every friday 9-5"
-    Recurring[5-21]{weekly 1 2021-05-14 09:00 (X/X) 2021-05-14 17:00 (X/X)}
-    
-     "beer september 24 / beer every 24.9"
-    Recurring[5-21]{YEARLY 1 2021-09-24 (X/X) 2021-09-24 (X/X)}
-
-    "beer thursdays 3pm and wednesdays 4pm"
-    RecurringArray[5-37]{
-    Recurring instance: weekly 1 2021-05-13 15:00 (X/X) 2021-05-13 15:00 (X/X) 
-    Recurring instance: weekly 1 2021-05-12 16:00 (X/X) 2021-05-12 16:00 (X/X)
-    }
-    
-    "beer 9pm weekdays"
-    RecurringArray[5-17]{
-    Recurring instance: weekly 1 2021-05-10 21:00 (X/X) 2021-05-10 21:00 (X/X) 
-    Recurring instance: weekly 1 2021-05-11 21:00 (X/X) 2021-05-11 21:00 (X/X) 
-    Recurring instance: weekly 1 2021-05-12 21:00 (X/X) 2021-05-12 21:00 (X/X) 
-    Recurring instance: weekly 1 2021-05-13 21:00 (X/X) 2021-05-13 21:00 (X/X) 
-    Recurring instance: weekly 1 2021-05-14 21:00 (X/X) 2021-05-14 21:00 (X/X)}
-    
-    
-| **Combinations** 
-
-.. code:: python
-
-    "beer in 3 days 4pm"
-    Time[5-18]{2021-05-12 16:00 (X/X)}
-    
-    
-    "beer in 3 days 4pm every week"
-    Recurring[5-29]{weekly 1 2021-05-12 16:00 (X/X) 2021-05-12 16:00 (X/X)}
-
 
 
 Ctparse
@@ -287,6 +338,7 @@ sequences of rules applied on top lead to meaningful results. Here the
 
 
 .. _ctparse: https://github.com/comtravo/ctparse
+.. _rrule: https://dateutil.readthedocs.io/en/stable/rrule.html
 
 Credits
 -------
