@@ -514,7 +514,7 @@ def ruleHHOClock(ts: datetime, pm_bias: bool, date_format: str, m: RegexMatch) -
 
 
 @rule(r"(a |one )?quarter( to| till| before| of)|vie?rtel vor", predicate("isTOD"))
-def ruleQuarterBeforeHH(ts: datetime, _: RegexMatch, t: Time) -> Optional[Time]:
+def ruleQuarterBeforeHH(ts: datetime, pm_bias: bool, date_format:str, _: RegexMatch, t: Time) -> Optional[Time]:
     # no quarter past hh:mm where mm is not 0 or missing
     if t.minute:
         return None
@@ -571,7 +571,7 @@ def ruleTODPOD(ts: datetime, pm_bias: bool, date_format: str, tod: Time, pod: Ti
 
 @rule(predicate("isPOD"), predicate("isTOD"))
 def rulePODTOD(ts: datetime, pm_bias: bool, date_format: str, pod: Time, tod: Time) -> Optional[Time]:
-    return cast(Time, ruleTODPOD(ts, tod, pod))
+    return cast(Time, ruleTODPOD(ts, pm_bias, date_format, tod, pod))
 
 
 @rule(predicate("isDate"), predicate("isTOD"))
