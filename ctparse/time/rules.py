@@ -219,7 +219,7 @@ def ruleNow(ts: datetime, pm_bias: bool, date_format: str, _: RegexMatch) -> Tim
     )
 
 
-@rule(r"morgen|tmrw?|tom|tomm?or?rows?")
+@rule(r"(morgen){e<=1}|tmrw?|(tomm?or?rows?){e<=1}|tom")
 def ruleTomorrow(ts: datetime, pm_bias: bool, date_format: str, _: RegexMatch) -> Time:
     dm = ts + relativedelta(days=1)
     return Time(year=dm.year, month=dm.month, day=dm.day)
@@ -486,7 +486,7 @@ def _maybe_apply_am_pm(t: Time, pm_bias: bool, date_format: str, ampm_match: str
 )
 def ruleHHMMmilitary(ts: datetime, pm_bias: bool, date_format: str, m: RegexMatch) -> Optional[Time]:
     t = Time(hour=int(m.match.group("hour")), minute=int(m.match.group("minute") or 0))
-    if m.match.group("clock") or _is_valid_military_time(ts, t):
+    if m.match.group("clock") or _is_valid_military_time(ts, pm_bias, date_format, t):
         return _maybe_apply_am_pm(t, pm_bias, date_format, m.match.group("ampm"))
     return None
 
