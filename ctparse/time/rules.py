@@ -219,7 +219,7 @@ def ruleNow(ts: datetime, pm_bias: bool, date_format: str, _: RegexMatch) -> Tim
     )
 
 
-@rule(r"morgen|tmrw?|tom|tomm?or?rows?")
+@rule(r"(morgen){e<=1}|tmrw?|(tomm?or?rows?){e<=1}|tom")
 def ruleTomorrow(ts: datetime, pm_bias: bool, date_format: str, _: RegexMatch) -> Time:
     dm = ts + relativedelta(days=1)
     return Time(year=dm.year, month=dm.month, day=dm.day)
@@ -486,7 +486,7 @@ def _maybe_apply_am_pm(t: Time, pm_bias: bool, date_format: str, ampm_match: str
 )
 def ruleHHMMmilitary(ts: datetime, pm_bias: bool, date_format: str, m: RegexMatch) -> Optional[Time]:
     t = Time(hour=int(m.match.group("hour")), minute=int(m.match.group("minute") or 0))
-    if m.match.group("clock") or _is_valid_military_time(ts, t):
+    if m.match.group("clock") or _is_valid_military_time(ts, pm_bias, date_format, t):
         return _maybe_apply_am_pm(t, pm_bias, date_format, m.match.group("ampm"))
     return None
 
@@ -514,7 +514,7 @@ def ruleHHOClock(ts: datetime, pm_bias: bool, date_format: str, m: RegexMatch) -
 
 
 @rule(r"(a |one )?quarter( to| till| before| of)|vie?rtel vor", predicate("isTOD"))
-def ruleQuarterBeforeHH(ts: datetime, _: RegexMatch, t: Time) -> Optional[Time]:
+def ruleQuarterBeforeHH(ts: datetime, pm_bias: bool, date_format:str, _: RegexMatch, t: Time) -> Optional[Time]:
     # no quarter past hh:mm where mm is not 0 or missing
     if t.minute:
         return None
@@ -571,7 +571,7 @@ def ruleTODPOD(ts: datetime, pm_bias: bool, date_format: str, tod: Time, pod: Ti
 
 @rule(predicate("isPOD"), predicate("isTOD"))
 def rulePODTOD(ts: datetime, pm_bias: bool, date_format: str, pod: Time, tod: Time) -> Optional[Time]:
-    return cast(Time, ruleTODPOD(ts, tod, pod))
+    return cast(Time, ruleTODPOD(ts, pm_bias, date_format, tod, pod))
 
 
 @rule(predicate("isDate"), predicate("isTOD"))
@@ -830,10 +830,10 @@ _rule_named_number = r"({})\s*".format(_rule_named_number)
 _durations = [
     (DurationUnit.NIGHTS, r"\bn[aä]chte?\b|\bnights?\b|\b[üu]bernachtung\b"),
     (DurationUnit.DAYS, r"\btage?\b|days?|d"),
-    (DurationUnit.MINUTES, r"m(inute[ns]?)?|mins?"),
+    (DurationUnit.MINUTES, r"\bmins?\b|m(inute[ns]?)?"),
     (DurationUnit.HOURS, r"\bstunden?\b|h(ours?)?|h|hrs?"),
     (DurationUnit.WEEKS, r"weeks?|\bwochen?\b|w"),
-    (DurationUnit.MONTHS, r"\bmonate?\b|months?"),
+    (DurationUnit.MONTHS, r"\bmonate?\b|\bmonths?\b"),
     (DurationUnit.YEARS, r'\bjahre?\b|\byears?\b|\by\b|\byrs?\b'),
 ]
 

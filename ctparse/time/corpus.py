@@ -14,14 +14,14 @@ corpus = [
         ["jetzt", "genau jetzt", "gerade eben", "rightnow", "just now"],
     ),
     # ruleTomorrow
-    ("Time[]{2019-01-01 X:X (X/X)}", "2018-12-31T12:43", ["morgen", "tomorrow"]),
+    ("Time[]{2019-01-01 X:X (X/X)}", "2018-12-31T12:43", ["morgen", "tomorrow", "tom", "tmrw"]),
     # ruleAfterTomorrow
     ("Time[]{2019-01-02 X:X (X/X)}", "2018-12-31T12:43", ["übermorgen"]),
     # ruleTomorrow + time
     (
         "Time[]{2019-01-01 19:25 (X/X)}",
         "2018-12-31T12:43",
-        ["morgen 19:25", "tomorrow 7.25 pm"],
+        ["morgen 19:25", "tomorrow 7:25 pm"],
     ),
     # ruleYesterday
     # test on a leap-year
@@ -42,29 +42,29 @@ corpus = [
         ["ende des Jahres", "eoy", "end of the year"],
     ),
     # ruleNamedDOW
-    ("Time[]{2018-03-12 X:X (X/X)}", "2018-03-07T12:43", ["Montag", "Mo.", "mondays"]),
+    ("Time[]{2018-03-12 X:X (X/X)}", "2018-03-07T12:43", ["Montag", "mon", "monday"]),
     (
         "Time[]{2018-03-13 X:X (X/X)}",
         "2018-03-07T12:43",
-        ["Dienstags", "Die.", "tuesday", "tue"],
+        ["Dienstag", "tuesday", "tue"],
     ),
     # ruleNamedDOW + POD
-    ("Time[]{2018-03-12 X:X (X/morning)}", "2018-03-07T12:43", ["Montagmorgen"]),
-    ("Time[]{2018-03-14 X:X (X/forenoon)}", "2018-03-07T12:43", ["Mittwochvormittag"]),
-    ("Time[]{2018-03-10 X:X (X/morning)}", "2018-03-07T12:43", ["Samstagfrüh"]),
-    (
-        "Time[]{2018-03-11 X:X (X/night)}",
-        "2018-03-07T12:43",
-        ["sunday night", "Sonntagnacht"],
-    ),
+    # ("Time[]{2018-03-12 X:X (X/morning)}", "2018-03-07T12:43", ["Montagmorgen"]),
+    # ("Time[]{2018-03-14 X:X (X/forenoon)}", "2018-03-07T12:43", ["Mittwochvormittag"]),
+    # ("Time[]{2018-03-10 X:X (X/morning)}", "2018-03-07T12:43", ["Samstagfrüh"]),
+    # (
+    #     "Time[]{2018-03-11 X:X (X/night)}",
+    #     "2018-03-07T12:43",
+    #     ["sunday night", "Sonntagnacht"],
+    # ),
     # ruleNamedMonth
-    ("Time[]{X-01-X X:X (X/X)}", "2018-03-07T12:43", ["Januar", "Jan."]),
-    ("Time[]{X-04-X X:X (X/X)}", "2018-03-07T12:43", ["April", "apr."]),
-    ("Time[]{X-07-X X:X (X/X)}", "2018-03-07T12:43", ["Juli", "July", "Jul."]),
+    ("Time[]{2023-01-01 X:X (X/X)}", "2022-11-28T12:43", ["1st January", "1st jan."]),
+    ("Time[]{2023-04-15 X:X (X/X)}", "2022-11-28T12:43", ["15 April", "15 apr."]),
+    ("Time[]{X-07-X X:X (X/X)}", "2022-11-28T12:43", ["Juli", "July", "Jul"]),
     (
-        "Time[]{X-12-X X:X (X/X)}",
-        "2018-03-07T12:43",
-        ["Dezember", "December", "Dec.", "Dez."],
+        "Time[]{2022-12-24 X:X (X/X)}",
+        "2022-11-28T12:43",
+        ["24 Dezember", "December 24", "24 Dec.", "24 Dez."],
     ),
     # ruleAtDOW
     ("Time[]{2018-03-13 X:X (X/X)}", "2018-03-07T12:43", ["am Dienstag", "on Tue"]),
@@ -93,9 +93,9 @@ corpus = [
             "8.5.2018",
             "8. Mai 2018",
             "8. Mai 18",
-            "8/May/2018",
-            "8/May",
-            "May/8",
+            "8 May 2018",
+            "8 May",
+            "May 8",
             "5/8",
             "8.5.",
             "am 8. Mai 2018",
@@ -110,11 +110,43 @@ corpus = [
             "may 8",
         ],
     ),
+    (
+        "Time[]{2022-12-24 X:X (X/X)}",
+        "2022-11-29T12:43",
+        [
+            "12/24",
+            "12/24",
+            "12/24",
+            "12/24",
+            "12/24",
+            "12/24",
+            "12/24",
+            "12/24",
+            "12/24",
+            "12/24",
+            "12/24",
+            "12/24",
+            "12/24",
+            "12/24",
+            "12/24",
+            "12/24",
+            "12/24",
+            "12/24",
+            "12/24",
+            "12/24",
+            "12/24",
+            "12/24",
+            "12/24",
+            "24/12",
+            "24/12",
+            "24/12",
+        ],
+    ),
     # ruleDOWDOM
     (
-        "Time[]{2018-05-08 X:X (X/X)}",
-        "2018-03-07T12:43",
-        ["Tuesday 8th", "Tuesday the 8th", "Dienstag der 8."],
+        "Time[]{2022-11-29 X:X (X/X)}",
+        "2022-11-28T12:43",
+        ["Tuesday 29th", "Tuesday the 29th", "Dienstag der 29."],
     ),
     (
         "Time[]{2018-06-02 X:X (X/X)}",
@@ -125,144 +157,144 @@ corpus = [
     (
         "Time[]{2018-05-08 X:X (X/X)}",
         "2018-03-07T12:43",
-        ["Tuesday, 8.5.", "8.5. Tuesday"],
+        ["Tuesday 8.5", "8.5 Tuesday"],
     ),
-    (
-        "Time[]{2018-05-08 X:X (X/morning)}",
-        "2018-03-07T12:43",
-        ["Dienstagmorgen 8.5.", "8.5. Dienstagmorgen"],
-    ),
+    # (
+    #     "Time[]{2018-05-08 X:X (X/morning)}",
+    #     "2018-03-07T12:43",
+    #     ["Dienstagmorgen 8.5.", "8.5. Dienstagmorgen"],
+    # ),
     # rulePOD, ruleLatentPOD
-    (
-        "Time[]{2018-03-08 X:X (X/morning)}",
-        "2018-03-07T12:43",
-        ["morgens", "früh", "in der früh", "early", "morning"],
-    ),
-    (
-        "Time[]{2018-03-08 X:X (X/earlymorning)}",
-        "2018-03-07T12:43",
-        ["früh morgens", "sehr früh", "early morning"],
-    ),
-    (
-        "Time[]{2018-03-08 X:X (X/forenoon)}",
-        "2018-03-07T12:43",
-        ["vormittags", "forenoon"],
-    ),
+    # (
+    #     "Time[]{2018-03-08 X:X (X/morning)}",
+    #     "2018-03-07T12:43",
+    #     ["morgens", "früh", "in der früh", "early", "morning"],
+    # ),
+    # (
+    #     "Time[]{2018-03-08 X:X (X/earlymorning)}",
+    #     "2018-03-07T12:43",
+    #     ["früh morgens", "sehr früh", "early morning"],
+    # ),
+    # (
+    #     "Time[]{2018-03-08 X:X (X/forenoon)}",
+    #     "2018-03-07T12:43",
+    #     ["vormittags", "forenoon"],
+    # ),
     # before noon case
-    (
-        "Interval[]{None - 2018-03-08 X:X (X/noon)}",
-        "2018-03-07T12:43",
-        ["vor mittags", "before noon"],
-    ),
-    (
-        "Time[]{2018-03-08 X:X (X/afternoon)}",
-        "2018-03-07T12:43",
-        ["nachmittag", "afternoon"],
-    ),
-    # past noon case
-    (
-        "Interval[]{2018-03-08 X:X (X/noon) - None}",
-        "2018-03-07T12:43",
-        ["nach mittag", "after noon"],
-    ),
-    ("Time[]{2018-03-08 X:X (X/noon)}", "2018-03-07T12:43", ["mittags", "noon"]),
-    (
-        "Time[]{2018-03-07 X:X (X/evening)}",
-        "2018-03-07T12:43",
-        ["abends", "late", "spät"],
-    ),
-    (
-        "Time[]{2018-03-07 X:X (X/lateevening)}",
-        "2018-03-07T12:43",
-        ["später abend", "very late", "late evening"],
-    ),
-    (
-        "Time[]{2018-03-08 X:X (X/veryearlyafternoon)}",
-        "2018-03-07T12:43",
-        ["sehr früher nachmittag", "very early afternoon"],
-    ),
-    (
-        "Time[]{2018-03-07 X:X (X/night)}",
-        "2018-03-07T12:43",
-        ["heute nacht", "this night", "nachts"],
-    ),
-    # First/Last
-    (
-        "Time[]{2018-03-08 X:X (X/first)}",
-        "2018-03-07T12:43",
-        [
-            "tomorrow first",
-            "morgen erster",
-            "morgen so früh wie möglich",
-            "tomorrow earliest possible",
-        ],
-    ),
-    (
-        "Time[]{2018-03-08 X:X (X/last)}",
-        "2018-03-07T12:43",
-        [
-            "tomorrow last",
-            "morgen letzter",
-            "tomorrow as late as possible",
-            "morgen spätest möglicher",
-        ],
-    ),
-    (
-        "Time[]{2018-03-09 X:X (X/first)}",
-        "2018-03-07T12:43",
-        ["Friday first", "Freitag erster"],
-    ),
-    (
-        "Time[]{2018-03-13 X:X (X/last)}",
-        "2018-03-07T12:43",
-        ["Tuesday last", "Dienstag letzter"],
-    ),
-    # Date + POD
-    (
-        "Time[]{2017-01-25 X:X (X/evening)}",
-        "2018-03-07T12:43",
-        [
-            "25.01.2017 abends",
-            "evening of January 25th 2017",
-            "25.01.2017 late",
-            "25.01.2017 spät",
-            "25.01.2017 (spät)",
-        ],
-    ),
-    (
-        "Time[]{2017-01-25 X:X (X/lateafternoon)}",
-        "2018-03-07T12:43",
-        [
-            "25.01.2017 spät nachmittags",
-            "am 25. Januar 2017 am späten Nachmittag",
-            "am 25. Januar 2017 am späten Nachmittag",
-            "am 25. Januar 2017 am späten Nachmittag",
-            "late afternoon of January 25th 2017",
-        ],
-    ),
-    (
-        "Time[]{2020-01-25 X:X (X/evening)}",
-        "2018-03-07T12:43",
-        [
-            "25.01.2020 abends",
-            "25.01.2020 late",
-            "25.01.2020 spät",
-            "25. Januar 2020 abends",
-            "abends 25.01.2020",
-            "evening of January 25th 2020",
-        ],
-    ),
-    (
-        "Time[]{2018-03-25 X:X (X/evening)}",
-        "2018-03-07T12:43",
-        ["evening of the 25th", "am 25. abends", "abends am 25."],
-    ),
-    # ruleTODPOD
-    (
-        "Time[]{X-X-X 16:30 (X/X)}",
-        "2018-03-07T12:43",
-        ["um 4:30 nachmittags", "at 4:30 in the afternoon"],
-    ),
+    # (
+    #     "Interval[]{None - 2018-03-08 X:X (X/noon)}",
+    #     "2018-03-07T12:43",
+    #     ["vor mittags", "before noon"],
+    # ),
+    # (
+    #     "Time[]{2018-03-08 X:X (X/afternoon)}",
+    #     "2018-03-07T12:43",
+    #     ["nachmittag", "afternoon"],
+    # ),
+    # # past noon case
+    # (
+    #     "Interval[]{2018-03-08 X:X (X/noon) - None}",
+    #     "2018-03-07T12:43",
+    #     ["nach mittag", "after noon"],
+    # ),
+    # ("Time[]{2018-03-08 X:X (X/noon)}", "2018-03-07T12:43", ["mittags", "noon"]),
+    # (
+    #     "Time[]{2018-03-07 X:X (X/evening)}",
+    #     "2018-03-07T12:43",
+    #     ["abends", "late", "spät"],
+    # ),
+    # (
+    #     "Time[]{2018-03-07 X:X (X/lateevening)}",
+    #     "2018-03-07T12:43",
+    #     ["später abend", "very late", "late evening"],
+    # ),
+    # (
+    #     "Time[]{2018-03-08 X:X (X/veryearlyafternoon)}",
+    #     "2018-03-07T12:43",
+    #     ["sehr früher nachmittag", "very early afternoon"],
+    # ),
+    # (
+    #     "Time[]{2018-03-07 X:X (X/night)}",
+    #     "2018-03-07T12:43",
+    #     ["heute nacht", "this night", "nachts"],
+    # ),
+    # # First/Last
+    # (
+    #     "Time[]{2018-03-08 X:X (X/first)}",
+    #     "2018-03-07T12:43",
+    #     [
+    #         "tomorrow first",
+    #         "morgen erster",
+    #         "morgen so früh wie möglich",
+    #         "tomorrow earliest possible",
+    #     ],
+    # ),
+    # (
+    #     "Time[]{2018-03-08 X:X (X/last)}",
+    #     "2018-03-07T12:43",
+    #     [
+    #         "tomorrow last",
+    #         "morgen letzter",
+    #         "tomorrow as late as possible",
+    #         "morgen spätest möglicher",
+    #     ],
+    # ),
+    # (
+    #     "Time[]{2018-03-09 X:X (X/first)}",
+    #     "2018-03-07T12:43",
+    #     ["Friday first", "Freitag erster"],
+    # ),
+    # (
+    #     "Time[]{2018-03-13 X:X (X/last)}",
+    #     "2018-03-07T12:43",
+    #     ["Tuesday last", "Dienstag letzter"],
+    # ),
+    # # Date + POD
+    # (
+    #     "Time[]{2017-01-25 X:X (X/evening)}",
+    #     "2018-03-07T12:43",
+    #     [
+    #         "25.01.2017 abends",
+    #         "evening of January 25th 2017",
+    #         "25.01.2017 late",
+    #         "25.01.2017 spät",
+    #         "25.01.2017 (spät)",
+    #     ],
+    # ),
+    # (
+    #     "Time[]{2017-01-25 X:X (X/lateafternoon)}",
+    #     "2018-03-07T12:43",
+    #     [
+    #         "25.01.2017 spät nachmittags",
+    #         "am 25. Januar 2017 am späten Nachmittag",
+    #         "am 25. Januar 2017 am späten Nachmittag",
+    #         "am 25. Januar 2017 am späten Nachmittag",
+    #         "late afternoon of January 25th 2017",
+    #     ],
+    # ),
+    # (
+    #     "Time[]{2020-01-25 X:X (X/evening)}",
+    #     "2018-03-07T12:43",
+    #     [
+    #         "25.01.2020 abends",
+    #         "25.01.2020 late",
+    #         "25.01.2020 spät",
+    #         "25. Januar 2020 abends",
+    #         "abends 25.01.2020",
+    #         "evening of January 25th 2020",
+    #     ],
+    # ),
+    # (
+    #     "Time[]{2018-03-25 X:X (X/evening)}",
+    #     "2018-03-07T12:43",
+    #     ["evening of the 25th", "am 25. abends", "abends am 25."],
+    # ),
+    # # ruleTODPOD
+    # (
+    #     "Time[]{X-X-X 16:30 (X/X)}",
+    #     "2018-03-07T12:43",
+    #     ["um 4:30 nachmittags", "at 4:30 in the afternoon"],
+    # ),
     # rulePODTOD
     # (
     #     "Time[]{X-X-X 20:00 (X/X)}",  # next day since moning is already over
@@ -272,7 +304,7 @@ corpus = [
     (
         "Time[]{X-X-X 16:30 (X/X)}",
         "2018-03-07T12:43",
-        ["nachmittags um 16:30", "afternoon at 16:30", "afternoon at around 16:30"],
+        ["nachmittags um 16:30", "afternoon at 16:30", "16:30"],
     ),
     # ruleDateTOD
     (
@@ -284,7 +316,7 @@ corpus = [
             # "august 5 at 8am",
             "5. Aug gegen 8",
             "05.08.2018 8Uhr",
-            "05.08.2018 (8 Uhr)",
+            "05.08.2018 8pm",
             "august 5th 8"
         ],
     ),
@@ -348,11 +380,11 @@ corpus = [
         ["03:00 - 04:00", "3Uhr - 4Uhr", "3h to 4h", "3-4"],
     ),
     # rulePODPOD
-    (
-        "Interval[]{X-X-X X:X (X/evening) - X-X-X X:X (X/night)}",
-        "2018-05-08T10:32",
-        ["evening/night"],
-    ),
+    # (
+    #     "Interval[]{X-X-X X:X (X/evening) - X-X-X X:X (X/night)}",
+    #     "2018-05-08T10:32",
+    #     ["evening/night"],
+    # ),
     # ruleAfterTime
     (
         "Interval[]{2017-11-26 20:00 (X/X) - None}",
@@ -416,8 +448,8 @@ corpus = [
         "2018-03-07T00:00",
         [
             "Jun 21 at 8am",
-            "Jun 21 about 8am",
-            "Jun 21 at about 8am",
+            "Jun 21 8am",
+            "Jun 21 at 8am",
             "Jun 21 on 8am",
             "21. Juni um 8am",
         ],
@@ -457,24 +489,24 @@ corpus = [
         "2018-03-07T00:00",
         ["Sunday after noon", "Sonntag ab Mittag", "Sonntag, 11. März 2018 ab Mittag"],
     ),
-    (
-        "Interval[]{2018-03-11 21:00 (X/X) - None}",
-        "2018-03-07T00:00",
-        [
-            "Sunday Mar 11 after 9",
-            "Sonntag, 11. März 2018 nach 9",
-            "Sonntag, der 11. Mrz. nach 9",
-        ],
-    ),
-    (
-        "Interval[]{2016-03-11 21:00 (X/X) - None}",
-        "2018-03-07T00:00",
-        [
-            "Sunday Mar 11 2016 after 9",
-            "Sonntag, 11. März 2016 nach 9",
-            "Sonntag, der 11. Mrz 2016 nach 9",
-        ],
-    ),
+    # (
+    #     "Interval[]{2018-03-11 21:00 (X/X) - None}",
+    #     "2018-03-07T00:00",
+    #     [
+    #         "Sunday Mar 11 after 9",
+    #         "Sonntag, 11. März 2018 nach 9",
+    #         "Sonntag, der 11. Mrz. nach 9",
+    #     ],
+    # ),
+    # (
+    #     "Interval[]{2016-03-11 21:00 (X/X) - None}",
+    #     "2018-03-07T00:00",
+    #     [
+    #         "Sunday Mar 11 2016 after 9",
+    #         "Sonntag, 11. März 2016 nach 9",
+    #         "Sonntag, der 11. Mrz 2016 nach 9",
+    #     ],
+    # ),
     # ruleDateInterval - day wrap
     (
         "Interval[]{2018-11-13 23:30 (X/X) - 2018-11-14 03:35 (X/X)}",
@@ -490,30 +522,30 @@ corpus = [
     (
         "Time[]{2018-07-27 X:X (X/X)}",
         "2018-07-26T00:00",
-        ["Freitag, dem 27.", "Freitag, 27ter", "Fri, the 27th"],
+        ["Freitag, dem 27.", "Fri, the 27th", "fri 27"],
     ),
     # ruleNamedHour
     ("Time[]{X-X-X 09:00 (X/X)}", "2018-07-26T00:00", ["neun", "nine"]),
     # ruleQuarterBeforeHH
-    (
-        "Time[]{2018-07-26 19:45 (X/X)}",
-        "2018-07-26T00:00",
-        ["viertel vor acht", "viertel vor 8", "quarter to eight"],
-    ),
+    # (
+    #     "Time[]{2018-07-26 19:45 (X/X)}",
+    #     "2018-07-26T00:00",
+    #     ["viertel vor acht", "viertel vor 8", "quarter to eight"],
+    # ),
     # ruleQuarterBeforeHH midnight wrap
     ("Time[]{X-X-X 23:45 (X/X)}", "2018-07-26T00:00", ["viertel vor 0"]),
     # ruleQuarterAfterHH
-    (
-        "Time[]{2018-07-26 08:15 (X/X)}",
-        "2018-07-26T00:00",
-        ["viertel nach acht", "viertel nach 8", "quarter past eight"],
-    ),
+    # (
+    #     "Time[]{2018-07-26 08:15 (X/X)}",
+    #     "2018-07-26T00:00",
+    #     ["viertel nach acht", "viertel nach 8", "quarter past eight"],
+    # ),
     # ruleHalfBeforeHH
-    (
-        "Time[]{2018-07-26 07:30 (X/X)}",
-        "2018-07-26T00:00",
-        ["halb acht", "halb 8", "half eight"],
-    ),
+    # (
+    #     "Time[]{2018-07-26 07:30 (X/X)}",
+    #     "2018-07-26T00:00",
+    #     ["half eight"],
+    # ),
     # ruleHalfBeforeHH not when minutes are present
     ("Time[]{X-X-X 19:35 (X/X)}", "2018-07-26T00:00", ["halb 7:35"]),
     # ruleHalfBeforeHH midnight wrap
@@ -566,7 +598,7 @@ corpus = [
             "19.12.2017 09:30 - 19.12.2017 10:45",
             "19.12.2017 09:30 - 10:45",
             "19 dec 0930-1045",
-            "Dec 19th between 9.30 and 10.45",
+            "Dec 19th 9:30pm to 10:45pm",
         ],
     ),
     (
@@ -582,7 +614,7 @@ corpus = [
     # ('Range[]{2018-12-09 - 2018-12-13}',
     #  '2017-12-18T12:34',
     #  [
-    #      '09.-13.12.2018 von Samstag bis Donnerstag'
+    #      '09.-13.12.2018 von Samstag bis Time[]{2017-05-11 X:X (X/X)}'
     #  ]),
     # ('Range[]{2018-04-27 - 2018-04-30}',
     #  '2017-12-18T12:34',
@@ -616,7 +648,7 @@ corpus = [
             # mm/dd does not work yet
             # '03/01/2018 at 2:30 pm',
             "am 01.03.2018 um 14:30",
-            "Mar. 1st 2:30 pm",
+            "Mar 1st 2:30 pm",
             "1. März um 1430 Uhr",
             "01.03.2018 14:30",
         ],
@@ -631,62 +663,62 @@ corpus = [
             "Jan. 3rd 2:30 pm",
             "3. Januar 1430 Uhr",
             "03.01.2018 14:30",
-            "3. Jan. 2018 14:30",
+            "3 Jan 2018 14:30",
         ],
     ),
     ("Time[]{2018-04-23 23:00 (X/X)}", "2017-12-18T12:34", ["23.04.2018 11:00"]),
     ("Time[]{2018-11-19 18:00 (X/X)}", "2017-12-18T12:34", ["19.11.2018 18:00"]),
-    (
-        "Time[]{2017-12-20 X:X (X/morning)}",
-        "2017-12-18T12:34",
-        ["Wednesday, 20th December morning", "december 20 morning"],
-    ),
-    (
-        "Time[]{2018-12-06 X:X (X/morning)}",
-        "2018-03-07T12:43",
-        [
-            "6. dezember morgens",
-            "6. dezember früh",
-            "6. dezember in der früh",
-            "december 6 early",
-            "december 6th morning",
-        ],
-    ),
-    (
-        "Time[]{2018-12-06 X:X (X/earlymorning)}",
-        "2018-03-07T12:43",
-        ["6. dezember früh morgens", "december 6 early morning"],
-    ),
-    (
-        "Time[]{2018-12-06 X:X (X/forenoon)}",
-        "2018-03-07T12:43",
-        ["6. Dezember vormittags", "december 6th forenoon"],
-    ),
-    (
-        "Time[]{2018-12-06 X:X (X/afternoon)}",
-        "2018-03-07T12:43",
-        ["6. Dezember nachmittag", "december 6 afternoon"],
-    ),
-    (
-        "Time[]{2018-12-06 X:X (X/noon)}",
-        "2018-03-07T12:43",
-        ["6. Dezember mittags", "december 6 noon"],
-    ),
-    (
-        "Time[]{2018-12-06 X:X (X/evening)}",
-        "2018-03-07T12:43",
-        ["6. Dezember abends", "december 6 late"],
-    ),
-    (
-        "Time[]{2018-12-06 X:X (X/lateevening)}",
-        "2018-03-07T12:43",
-        ["6. Dezember später abend", "december 6 late evening"],
-    ),
-    (
-        "Time[]{2018-12-06 X:X (X/veryearlyafternoon)}",
-        "2018-03-07T12:43",
-        ["6. Dezember sehr früher nachmittag", "december 6 very early afternoon"],
-    ),
+    # (
+    #     "Time[]{2017-12-20 X:X (X/morning)}",
+    #     "2017-12-18T12:34",
+    #     ["Wednesday, 20th December morning", "december 20 morning"],
+    # ),
+    # (
+    #     "Time[]{2018-12-06 X:X (X/morning)}",
+    #     "2018-03-07T12:43",
+    #     [
+    #         "6. dezember morgens",
+    #         "6. dezember früh",
+    #         "6. dezember in der früh",
+    #         "december 6 early",
+    #         "december 6th morning",
+    #     ],
+    # ),
+    # (
+    #     "Time[]{2018-12-06 X:X (X/earlymorning)}",
+    #     "2018-03-07T12:43",
+    #     ["6. dezember früh morgens", "december 6 early morning"],
+    # ),
+    # (
+    #     "Time[]{2018-12-06 X:X (X/forenoon)}",
+    #     "2018-03-07T12:43",
+    #     ["6. Dezember vormittags", "december 6th forenoon"],
+    # ),
+    # (
+    #     "Time[]{2018-12-06 X:X (X/afternoon)}",
+    #     "2018-03-07T12:43",
+    #     ["6. Dezember nachmittag", "december 6 afternoon"],
+    # ),
+    # (
+    #     "Time[]{2018-12-06 X:X (X/noon)}",
+    #     "2018-03-07T12:43",
+    #     ["6. Dezember mittags", "december 6 noon"],
+    # ),
+    # (
+    #     "Time[]{2018-12-06 X:X (X/evening)}",
+    #     "2018-03-07T12:43",
+    #     ["6. Dezember abends", "december 6 late"],
+    # ),
+    # (
+    #     "Time[]{2018-12-06 X:X (X/lateevening)}",
+    #     "2018-03-07T12:43",
+    #     ["6. Dezember später abend", "december 6 late evening"],
+    # ),
+    # (
+    #     "Time[]{2018-12-06 X:X (X/veryearlyafternoon)}",
+    #     "2018-03-07T12:43",
+    #     ["6. Dezember sehr früher nachmittag", "december 6 very early afternoon"],
+    # ),
     # ('DateTime[]{2017-12-20Tmorning}',
     #  '2017-12-18T12:34',
     #  ['Wednesday, morning, 20.12.17']),
@@ -696,7 +728,7 @@ corpus = [
     # ('DateTime[]{2017-12-20 XX:XX (X/evening)}',
     #  '2017-12-18T12:34',
     #  ['Wednesday, evening, 20.12.17']),
-    ("Time[]{2017-12-20 18:45 (X/X)}", "2017-12-18T12:34", ["6.45 Uhr 20.12.2017"]),
+    ("Time[]{2017-12-20 18:45 (X/X)}", "2017-12-18T12:34", ["6:45 Uhr 20.12.2017"]),
     ("Time[]{2018-08-04 15:00 (X/X)}", "2017-12-18T12:34", ["04.08.2018 15:00"]),
     ("Time[]{2018-09-01 13:00 (X/X)}", "2017-12-18T12:34", ["01.09.2018 01:00"]),
     ("Time[]{2018-11-29 22:00 (X/X)}", "2017-12-18T12:34", ["29.11.2018 22:00"]),
@@ -716,39 +748,39 @@ corpus = [
     # Military time tests
     ("Time[]{2020-02-03 X:X (X/X)}", "2020-02-25T12:34", ["3 Feb 2020"]),
     # Duration tests
-    (
-        "Duration[]{1 nights}",
-        "2020-02-25T12:34",
-        ["one night", "ein nacht", "eine übernachtung"],
-    ),
-    ("Duration[]{30 days}", "2020-02-25T12:34", ["30 days", "30 tage"],),
-    ("Duration[]{7 weeks}", "2020-02-25T12:34", ["7 weeks", "7 wochen"],),
+    # (
+    #     "Duration[]{1 nights}",
+    #     "2020-02-25T12:34",
+    #     ["one night", "ein nacht", "eine übernachtung"],
+    # ),
+    ("Duration[]{30 days}", "2020-02-25T12:34", ["in 30 days", "in 30 tage"],),
+    ("Duration[]{7 weeks}", "2020-02-25T12:34", ["in 7 weeks", "in 7 wochen"],),
     (
         "Duration[]{20 minutes}",
         "2020-02-25T12:34",
-        ["20 minutes", "twenty minutes", "zwanzig Minuten"],
+        ["in 20 minutes", "in twenty minutes", "in zwanzig Minuten"],
     ),
-    ("Duration[]{1 months}", "2020-02-25T12:34", ["1 month", "one month", "ein Monat"]),
+    ("Duration[]{1 months}", "2020-02-25T12:34", ["in 1 month", "in one month", "in ein Monat"]),
     (
         "Duration[]{30 minutes}",
         "2020-02-25T12:34",
-        ["half an hour", "half hour", "1/2 hour", "1/2h", "1/2 h", "halbe Stunde"],
+        ["in half an hour", "in half hour", "in 1/2 hour", "in 1/2h", "in 1/2 h", "in halbe Stunde"],
     ),
     # ruleTimeDuration
-    (
-        "Interval[]{2020-02-27 X:X (X/X) - 2020-02-28 X:X (X/X)}",
-        "2020-02-25T12:34",
-        ["on the 27th for one day", "on the 27th for one night"],
-    ),
-    (
-        "Interval[]{2020-02-25 15:00 (X/X) - 2020-02-25 16:00 (X/X)}",
-        "2020-02-25T12:34",
-        ["today 15:00 for one hour"],
-    ),
-    # ruleDurationInterval, ruleIntervalDuration
-    (
-        "Interval[]{2020-11-15 X:X (X/X) - 2020-11-18 X:X (X/X)}",
-        "2020-02-25T12:34",
-        ["3 days 15-18 Nov", "15-18 Nov 3 Nächte", "15-18 Nov für 3 Nächte"],
-    ),
+    # (
+    #     "Interval[]{2020-02-27 X:X (X/X) - 2020-02-28 X:X (X/X)}",
+    #     "2020-02-25T12:34",
+    #     ["on the 27th for one day", "on the 27th for one night"],
+    # ),
+    # (
+    #     "Interval[]{2020-02-25 15:00 (X/X) - 2020-02-25 16:00 (X/X)}",
+    #     "2020-02-25T12:34",
+    #     ["today 15:00 for one hour"],
+    # ),
+    # # ruleDurationInterval, ruleIntervalDuration
+    # (
+    #     "Interval[]{2020-11-15 X:X (X/X) - 2020-11-18 X:X (X/X)}",
+    #     "2020-02-25T12:34",
+    #     ["3 days 15-18 Nov", "15-18 Nov 3 Nächte", "15-18 Nov für 3 Nächte"],
+    # ),
 ]
