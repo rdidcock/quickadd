@@ -231,7 +231,7 @@ def _ctparse(
         regex_matches = list(chain.from_iterable(regex_matches))
 
         # "acr-11" edge case
-        s = re.search(r'\b[a-z]+\b-\d+[a-z]*', txt)
+        s = re.search(r'\b[A-Za-z]+\b-\d+[A-Za-z]*', txt)
         if s:
             raw = re.split(r'[\s]+', txt)
         else:
