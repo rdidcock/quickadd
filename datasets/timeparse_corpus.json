@@ -11688,6 +11688,30 @@
   "language": "de"
  },
  {
+  "text": "3/24",
+  "ref_time": "2022-11-30T11:38:37",
+  "gold_parse": "Time[]{2023-03-24 X:X (X/X)}",
+  "language": "de"
+ },
+ {
+  "text": "10/19",
+  "ref_time": "2022-11-30T11:38:37",
+  "gold_parse": "Time[]{2023-10-19 X:X (X/X)}",
+  "language": "de"
+ },
+ {
+  "text": "6/14",
+  "ref_time": "2022-11-30T11:38:37",
+  "gold_parse": "Time[]{2023-06-14 X:X (X/X)}",
+  "language": "de"
+ },
+ {
+  "text": "7/17",
+  "ref_time": "2022-11-30T11:38:37",
+  "gold_parse": "Time[]{2023-07-17 X:X (X/X)}",
+  "language": "de"
+ },
+ {
   "text": "05-06.10.17",
   "ref_time": "2017-10-04T14:05:51",
   "gold_parse": "Interval[]{2017-10-05 X:X (X/X) - 2017-10-06 X:X (X/X)}",
