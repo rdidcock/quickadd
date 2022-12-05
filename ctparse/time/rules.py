@@ -687,7 +687,9 @@ def ruleDateTimeDateTime(
 def ruleTODTOD(ts: datetime, pm_bias: bool, date_format: str, t1: Time, _: RegexMatch, t2: Time) -> Interval:
     if not pm_bias:
         if (t2.hour < t1.hour):
-            t2.hour += 12
+            if t2.hour < 12:
+                t2.hour += 12
+
             return Interval(t_from=t1, t_to=t2)
 
     # 9-5 handling on pm bias
