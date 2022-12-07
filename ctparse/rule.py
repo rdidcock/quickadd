@@ -22,10 +22,12 @@ ProductionRule = Callable[..., Optional[Artifact]]
 
 rules = {}  # type: Dict[str, Tuple[ProductionRule, List[Predicate]]]
 
-_regex_cnt = 100  # leave this much space for ids of production types
+_regex_cnt = 150  # leave this much space for ids of production types
 _regex = {}  # compiled regex
 _regex_str = {}  # map regex id to original string
 _str_regex = {}  # type: Dict[str, int] # map regex raw str to regex id
+eu_regex = {}
+us_regex = {}
 
 _regex_hour = r"(?:[01]?\d)|(?:2[0-3])"
 _regex_minute = r"[0-5]\d"
@@ -35,7 +37,7 @@ _regex_year = r"(?:19\d\d)|(?:20[0-2]\d)|(?:\d\d)"
 
 # used in many places in rules
 _regex_to_join = (
-    r"(\-|/|to( the)?|(un)?til|bis( zum)?|zum|auf( den)?|und|"
+    r"(\-|to( the)?|(un)?til|bis( zum)?|zum|auf( den)?|und|"
     "no later than|spätestens?|at latest( at)?|and)"
 )
 
@@ -52,7 +54,7 @@ _defines = (
 )
 
 
-def rule(*patterns: Union[str, Predicate]) -> Callable[[Any], ProductionRule]:
+def rule(*patterns: Union[str, Predicate], **kwargs) -> Callable[[Any], ProductionRule]:
     def _map(p: Union[str, Predicate]) -> Predicate:
         if isinstance(p, str):
             # its a regex
@@ -74,9 +76,16 @@ def rule(*patterns: Union[str, Predicate]) -> Callable[[Any], ProductionRule]:
             )
             if new_rr.match(""):
                 raise ValueError("expression {} matches empty strings".format(p))
+
+            if kwargs and "date_format" in kwargs:
+                if kwargs['date_format'] == 'US':
+                    us_regex[_regex_cnt] = new_rr
+                else:
+                    eu_regex[_regex_cnt] = new_rr
+            else:
+                _regex[_regex_cnt] = new_rr
             _regex_str[_regex_cnt] = p
             _str_regex[p] = _regex_cnt
-            _regex[_regex_cnt] = new_rr
             _regex_cnt += 1
             return regex_match(_regex_cnt - 1)
         else:

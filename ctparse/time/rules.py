@@ -366,9 +366,10 @@ def ruleLatentPOD(ts: datetime, pm_bias: bool, date_format: str, pod: Time) -> T
 
 
 @rule(
-    r"(?<!\d|\.)(?P<day>(?&_day))[\./]"  # removed \-
+    r"(?<!\d|\.)(?P<day>(?&_day))[\.\/]"  # removed \-
     r"((?P<month>(?&_month))|(?P<named_month>({})))\.?"
-    r"(?!\d|am|\s*pm)".format(_rule_months)
+    r"(?!\d|am|\s*pm)".format(_rule_months),
+    date_format="EU"
 )
 # do not allow dd.ddam, dd.ddpm, but allow dd.dd am - e.g. in the German
 # "13.06 am Nachmittag"
@@ -389,9 +390,10 @@ def ruleDDMM(ts: datetime, pm_bias: bool, date_format: str, m: RegexMatch) -> Ti
 
 
 @rule(
-    r"(?<!\d|\.)((?P<month>(?&_month))|(?P<named_month>({})))[\./\-]"
+    r"(?<!\d|\.)((?P<month>(?&_month))|(?P<named_month>({})))[\.\/]"
     r"(?P<day>(?&_day))"
-    r"(?!\d|am|\s*pm)".format(_rule_months)
+    r"(?!\d|am|\s*pm)".format(_rule_months),
+    date_format="US"
 )
 def ruleMMDD(ts: datetime, pm_bias: bool, date_format: str, m: RegexMatch) -> Time:
     if m.match.group("month"):
@@ -404,9 +406,10 @@ def ruleMMDD(ts: datetime, pm_bias: bool, date_format: str, m: RegexMatch) -> Ti
 
 
 @rule(
-    r"(?<!\d|\.)(?P<day>(?&_day))[-/\.]"
-    r"((?P<month>(?&_month))|(?P<named_month>({})))[-/\.]"
-    r"(?P<year>(?&_year))(?!\d)".format(_rule_months)
+    r"(?<!\d|\.)(?P<day>(?&_day))[\/\.]"
+    r"((?P<month>(?&_month))|(?P<named_month>({})))[\/\.]"
+    r"(?P<year>(?&_year))(?!\d)".format(_rule_months),
+    date_format="EU"
 )
 def ruleDDMMYYYY(ts: datetime, pm_bias: bool, date_format: str, m: RegexMatch) -> Time:
     y = int(m.match.group("year"))
@@ -420,6 +423,33 @@ def ruleDDMMYYYY(ts: datetime, pm_bias: bool, date_format: str, m: RegexMatch) -
                 month = i + 1
 
     time = Time(year=y, month=month, day=int(m.match.group("day")))
+    try:
+        time.dt
+        return time
+    except ValueError:
+        return None
+
+
+@rule(
+    r"(?<!\d|\.)\s*((?P<month>(?&_month))|(?P<named_month>({})))\s*[\/\.]"
+    r"(?P<day>(?&_day))\s*[\/\.]"
+    r"\s*(?P<year>(?&_year))(?!\d)".format(_rule_months),
+    date_format="US"
+)
+def ruleMMDDYYYY(ts: datetime, pm_bias: bool, date_format: str, m: RegexMatch) -> Time:
+    y = int(m.match.group("year"))
+    if y < 100:
+        y += 2000
+    if m.match.group("month"):
+        month = int(m.match.group("month"))
+    else:
+        for i, (name, _) in enumerate(_months):
+            if m.match.group(name):
+                month = i + 1
+
+    day = int(m.match.group("day"))
+    time = Time(year=y, month=month, day=day)
+
     try:
         time.dt
         return time
