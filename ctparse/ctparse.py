@@ -19,7 +19,7 @@ import regex
 from itertools import chain
 
 from .partial_parse import PartialParse
-from .rule import _regex as global_regex
+from .rule import _regex as global_regex, eu_regex, us_regex
 from .scorer import Scorer
 from .timers import CTParseTimeoutError, timeit
 
@@ -189,7 +189,9 @@ def _ctparse(
 
         logger.debug("=" * 80)
         logger.debug("-> matching regular expressions")
-        p, _tp = timeit(_match_regex)(txt, global_regex)
+
+        scope_regex = {**global_regex, **us_regex} if date_format == 'US' else {**global_regex, **eu_regex}
+        p, _tp = timeit(_match_regex)(txt, scope_regex)
         logger.debug("time in _match_regex: {:.0f}ms".format(1000 * _tp))
 
         logger.debug("=" * 80)
