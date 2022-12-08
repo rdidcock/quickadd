@@ -61,7 +61,8 @@ class CTParse:
             self.resolution, self.production, self.score, self.subject, self.labels)
 
     def __str__(self) -> str:
-        return "{} s={:.3f} p={} sb={}, lbl={}".format(self.resolution, self.score, self.production, self.subject, self.labels)
+        return "{} s={:.3f} p={} sb={}, lbl={}".format(self.resolution, self.score, self.production, self.subject,
+                                                       self.labels)
 
 
 def ctparse(
@@ -149,7 +150,8 @@ def ctparse_gen(
         scorer = _DEFAULT_SCORER
     if ts is None:
         ts = datetime.now()
-    for parse in _ctparse(
+
+    if not list(_ctparse(
         _preprocess_string(txt),
         ts,
         pm_bias,
@@ -158,15 +160,70 @@ def ctparse_gen(
         relative_match_len=relative_match_len,
         max_stack_depth=max_stack_depth,
         scorer=scorer,
-    ):
-        if parse and latent_time:
-            # NOTE: we post-process after scoring because the model has been trained
-            # without using the latent time. This means also that the post processing
-            # step won't be added to the rules
-            prod = apply_postprocessing_rules(ts, parse.resolution)
-            parse.resolution = prod
+    )):
+        # fallback
+        if date_format == "US":
+            fallback_date_format = "EU"
+        else:
+            fallback_date_format = "US"
 
-        yield parse
+        for parse in _ctparse(
+            _preprocess_string(txt),
+            ts,
+            pm_bias,
+            date_format=fallback_date_format,
+            timeout=timeout,
+            relative_match_len=relative_match_len,
+            max_stack_depth=max_stack_depth,
+            scorer=scorer,
+        ):
+            if parse and latent_time:
+                # NOTE: we post-process after scoring because the model has been trained
+                # without using the latent time. This means also that the post processing
+                # step won't be added to the rules
+                prod = apply_postprocessing_rules(ts, parse.resolution)
+                parse.resolution = prod
+
+            yield parse
+
+    else:
+        for parse in _ctparse(
+            _preprocess_string(txt),
+            ts,
+            pm_bias,
+            date_format,
+            timeout=timeout,
+            relative_match_len=relative_match_len,
+            max_stack_depth=max_stack_depth,
+            scorer=scorer,
+        ):
+            if parse and latent_time:
+                # NOTE: we post-process after scoring because the model has been trained
+                # without using the latent time. This means also that the post processing
+                # step won't be added to the rules
+                prod = apply_postprocessing_rules(ts, parse.resolution)
+                parse.resolution = prod
+
+            yield parse
+
+    # for parse in _ctparse(
+    #     _preprocess_string(txt),
+    #     ts,
+    #     pm_bias,
+    #     date_format,
+    #     timeout=timeout,
+    #     relative_match_len=relative_match_len,
+    #     max_stack_depth=max_stack_depth,
+    #     scorer=scorer,
+    # ):
+    #     if parse and latent_time:
+    #         # NOTE: we post-process after scoring because the model has been trained
+    #         # without using the latent time. This means also that the post processing
+    #         # step won't be added to the rules
+    #         prod = apply_postprocessing_rules(ts, parse.resolution)
+    #         parse.resolution = prod
+    #
+    #     yield parse
 
 
 def _ctparse(
