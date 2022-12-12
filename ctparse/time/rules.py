@@ -1428,3 +1428,25 @@ def ruleDurationRecurring(ts: datetime, pm_bias: bool, date_format: str, d: Dura
         day=dur.day
     )
     return Recurring(frequency=r.frequency, interval=r.interval, start_time=time, end_time=time, byday=dur.dt.weekday())
+
+
+@rule(r"(next)\s*" + _rule_durations)
+def ruleNextFrequency(ts: datetime, pm_bias: bool, date_format: str, m: RegexMatch):
+    for n, _, in _durations:
+        unit = m.match.group("d_" + n.value)
+        if unit:
+            if unit == "week":
+                d = ts + relativedelta(days=7)
+                return Time(
+                    year=d.year,
+                    month=d.month,
+                    day=d.day,
+                )
+            if unit == "month":
+                d = ts + relativedelta(months=1)
+                return Time(
+                    year=d.year,
+                    month=d.month,
+                    day=d.day,
+                )
+    return None
