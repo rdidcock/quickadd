@@ -151,7 +151,8 @@ def ctparse_gen(
     if ts is None:
         ts = datetime.now()
 
-    if not list(_ctparse(
+
+    generated_parse = list(_ctparse(
         _preprocess_string(txt),
         ts,
         pm_bias,
@@ -160,7 +161,9 @@ def ctparse_gen(
         relative_match_len=relative_match_len,
         max_stack_depth=max_stack_depth,
         scorer=scorer,
-    )):
+    ))
+
+    if not generated_parse:
         # fallback
         if date_format == "US":
             fallback_date_format = "EU"
@@ -187,16 +190,7 @@ def ctparse_gen(
             yield parse
 
     else:
-        for parse in _ctparse(
-            _preprocess_string(txt),
-            ts,
-            pm_bias,
-            date_format,
-            timeout=timeout,
-            relative_match_len=relative_match_len,
-            max_stack_depth=max_stack_depth,
-            scorer=scorer,
-        ):
+        for parse in generated_parse:
             if parse and latent_time:
                 # NOTE: we post-process after scoring because the model has been trained
                 # without using the latent time. This means also that the post processing
