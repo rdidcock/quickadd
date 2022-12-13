@@ -1,5 +1,5 @@
 from typing import Optional, Any, cast
-from datetime import datetime
+from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
 from dateutil.rrule import rrule, MONTHLY
 from ..rule import rule, predicate, dimension, _regex_to_join
@@ -1428,3 +1428,41 @@ def ruleDurationRecurring(ts: datetime, pm_bias: bool, date_format: str, d: Dura
         day=dur.day
     )
     return Recurring(frequency=r.frequency, interval=r.interval, start_time=time, end_time=time, byday=dur.dt.weekday())
+
+
+@rule(r"(next)\s*" + _rule_durations)
+def ruleNextFrequency(ts: datetime, pm_bias: bool, date_format: str, m: RegexMatch):
+    for n, _, in _durations:
+        unit = m.match.group("d_" + n.value)
+        if unit:
+            if unit == "week":
+                d = ts + relativedelta(days=7)
+                return Time(
+                    year=d.year,
+                    month=d.month,
+                    day=d.day,
+                )
+            if unit == "month":
+                d = ts + relativedelta(months=1)
+                return Time(
+                    year=d.year,
+                    month=d.month,
+                    day=d.day,
+                )
+    return None
+
+
+@rule(r"(last)\s*" + _rule_dows)
+def ruleLastDOM(ts: datetime, pm_bias: bool, date_format: str, m: RegexMatch):
+    # last monday of the month
+    for i, (name, _) in enumerate(_dows):
+        if m.match.group(name):
+            dom = i
+            break
+    last_dom = (datetime.now().replace(day=1) + timedelta(days=32)).replace(day=1)
+    while True:
+        last_dom -= timedelta(days=1)
+        if last_dom.weekday() == dom:
+            return Time(month=last_dom.month, day=last_dom.day)
+
+    return None
