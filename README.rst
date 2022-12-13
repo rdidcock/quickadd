@@ -54,6 +54,32 @@ Main upgrades include:
     Recurring instance: weekly 1 2021-05-14 21:00 (X/X) 2021-05-14 21:00 (X/X)}    
 
 
+**More rules**
+
+ruleNextFrequency
+
+.. code:: python
+    
+    #reference date = Dec 13th 2022
+    r = ctparse("code next week 4pm")
+    r.resolution
+    Time[5-18]{2022-12-20 16:00
+    
+    r = ctparse("code next month")
+    r.resolution
+    Time[5-15]{2023-01-13 X:X (X/X)}
+
+
+ruleLastDOM
+
+.. code:: python
+    
+    #reference date = Dec 13th 2022
+    r = ctparse("code last monday of the month")
+    r.resolution
+    Time[5-17]{2022-12-26 X:X (X/X)}
+
+
 rrule_ **support**
 
 .. code:: python
