@@ -3516,6 +3516,12 @@
   "language": "en"
  },
  {
+  "text": "monday 5-9",
+  "ref_time": "2022-12-13T14:20:39",
+  "gold_parse": "Interval[]{2022-12-19 17:00 (X/X) - 2022-12-19 21:00 (X/X)}",
+  "language": "en"
+ },
+ {
   "text": "on June 14",
   "ref_time": "2017-05-29T15:01:39",
   "gold_parse": "Time[]{2017-06-14 X:X (X/X)}",
