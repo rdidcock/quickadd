@@ -1,5 +1,5 @@
 from typing import Optional, Any, cast
-from datetime import datetime
+from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
 from dateutil.rrule import rrule, MONTHLY
 from ..rule import rule, predicate, dimension, _regex_to_join
@@ -1449,4 +1449,20 @@ def ruleNextFrequency(ts: datetime, pm_bias: bool, date_format: str, m: RegexMat
                     month=d.month,
                     day=d.day,
                 )
+    return None
+
+
+@rule(r"(last)\s*" + _rule_dows)
+def ruleLastDOM(ts: datetime, pm_bias: bool, date_format: str, m: RegexMatch):
+    # last monday of the month
+    for i, (name, _) in enumerate(_dows):
+        if m.match.group(name):
+            dom = i
+            break
+    last_dom = (datetime.now().replace(day=1) + timedelta(days=32)).replace(day=1)
+    while True:
+        last_dom -= timedelta(days=1)
+        if last_dom.weekday() == dom:
+            return Time(month=last_dom.month, day=last_dom.day)
+
     return None
