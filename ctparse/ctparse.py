@@ -70,6 +70,7 @@ def ctparse(
     ts: Optional[datetime] = None,
     pm_bias: Optional[bool] = True,
     date_format: Optional[str] = None,
+    fallback: Optional[bool] = False,
     timeout: Union[int, float] = 1.0,
     debug: bool = False,
     relative_match_len: float = 1.0,
@@ -83,6 +84,7 @@ def ctparse(
     :type ts: datetime.datetime
     :param pm_bias: pm bias on or off / 24h or 12h format
     :param date_format: us / eu date format
+    :param fallback: fallback option if default date format is not parsed
     :param timeout: timeout for parsing in seconds; timeout=0
                     indicates no timeout
     :type timeout: float
@@ -107,6 +109,7 @@ def ctparse(
         ts,
         pm_bias,
         date_format,
+        fallback,
         timeout=timeout,
         relative_match_len=relative_match_len,
         max_stack_depth=max_stack_depth,
@@ -135,6 +138,7 @@ def ctparse_gen(
     ts: Optional[datetime] = None,
     pm_bias: Optional[bool] = True,
     date_format: Optional[str] = None,
+    fallback: Optional[bool] = False,
     timeout: Union[int, float] = 1.0,
     relative_match_len: float = 1.0,
     max_stack_depth: int = 10,
@@ -163,8 +167,7 @@ def ctparse_gen(
         scorer=scorer,
     ))
 
-    if not generated_parse:
-        # fallback
+    if fallback and not generated_parse:
         if date_format == "US":
             fallback_date_format = "EU"
         else:
