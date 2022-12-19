@@ -778,6 +778,45 @@ def ruleDateInterval(ts: datetime, pm_bias: bool, date_format: str, d: Time, i: 
     return Interval(t_from=t_from, t_to=t_to)
 
 
+@rule(dimension(Interval), predicate("isDate"))
+def ruleIntervalDate(ts: datetime, pm_bias: bool, date_format: str, i: Interval, d: Time) -> Optional[Interval]:
+    if not (
+        (i.t_from is None or i.t_from.isTOD or i.t_from.isPOD)
+        and (i.t_to is None or i.t_to.isTOD or i.t_to.isPOD)
+    ):
+        return None
+    t_from = t_to = None
+    if i.t_from is not None:
+        t_from = Time(
+            year=d.year,
+            month=d.month,
+            day=d.day,
+            hour=i.t_from.hour,
+            minute=i.t_from.minute,
+            POD=i.t_from.POD,
+        )
+    if i.t_to is not None:
+        t_to = Time(
+            year=d.year,
+            month=d.month,
+            day=d.day,
+            hour=i.t_to.hour,
+            minute=i.t_to.minute,
+            POD=i.t_to.POD,
+        )
+    if t_from and t_to and t_from.dt >= t_to.dt:
+        t_to_dt = t_to.dt + relativedelta(days=1)
+        t_to = Time(
+            year=t_to_dt.year,
+            month=t_to_dt.month,
+            day=t_to_dt.day,
+            hour=t_to_dt.hour,
+            minute=t_to_dt.minute,
+            POD=t_to.POD,
+        )
+    return Interval(t_from=t_from, t_to=t_to)
+
+
 @rule(predicate("isPOD"), dimension(Interval))
 def rulePODInterval(ts: datetime, pm_bias: bool, date_format: str, p: Time, i: Interval) -> Optional[Interval]:
     def _adjust_h(t: Time) -> Optional[int]:
