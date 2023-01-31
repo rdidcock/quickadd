@@ -364,28 +364,28 @@ def ruleLatentPOD(ts: datetime, pm_bias: bool, date_format: str, pod: Time) -> T
     return Time(year=t_from.year, month=t_from.month, day=t_from.day, POD=pod.POD)
 
 
-@rule(predicate("hasTime"))
-def ruleLatentTime(ts: datetime, pm_bias: bool, date_format: str, t: Time) -> Time:
-    # new rule added, adjusts HHMM time to allow past time
-    dm = ts - relativedelta(hour=t.hour)
-    if dm > ts:
-        dm -= relativedelta(days=1)
-    return Time(year=dm.year, month=dm.month, day=dm.day, hour=dm.hour, minute=t.minute)
-
-
-@rule(dimension(Interval))
-def ruleLatentTimeInterval(ts: datetime, pm_bias: bool, date_format: str, t: Interval) -> Interval:
-    # new rule for HHMM to allow past time
-    t1, t2 = t.t_from, t.t_to
-    dm1 = ts - relativedelta(hour=t1.hour)
-    dm2 = ts - relativedelta(hour=t2.hour)
-    if dm1 >= ts:
-        dm1 -= relativedelta(days=1)
-        dm2 -= relativedelta(days=1)
-    if dm2 < dm1:
-        dm1 -= relativedelta(days=1)
-    return Interval(t_from=Time(year=dm1.year, month=dm1.month, day=dm1.day, hour=dm1.hour, minute=t1.minute),
-                    t_to=Time(year=dm2.year, month=dm2.month, day=dm2.day, hour=dm2.hour, minute=t2.minute))
+# @rule(predicate("hasTime"))
+# def ruleLatentTime(ts: datetime, pm_bias: bool, date_format: str, t: Time) -> Time:
+#     # new rule added, adjusts HHMM time to allow past time
+#     dm = ts - relativedelta(hour=t.hour)
+#     if dm > ts:
+#         dm -= relativedelta(days=1)
+#     return Time(year=dm.year, month=dm.month, day=dm.day, hour=dm.hour, minute=t.minute)
+#
+#
+# @rule(dimension(Interval))
+# def ruleLatentTimeInterval(ts: datetime, pm_bias: bool, date_format: str, t: Interval) -> Interval:
+#     # new rule for HHMM to allow past time
+#     t1, t2 = t.t_from, t.t_to
+#     dm1 = ts - relativedelta(hour=t1.hour)
+#     dm2 = ts - relativedelta(hour=t2.hour)
+#     if dm1 >= ts:
+#         dm1 -= relativedelta(days=1)
+#         dm2 -= relativedelta(days=1)
+#     if dm2 < dm1:
+#         dm1 -= relativedelta(days=1)
+#     return Interval(t_from=Time(year=dm1.year, month=dm1.month, day=dm1.day, hour=dm1.hour, minute=t1.minute),
+#                     t_to=Time(year=dm2.year, month=dm2.month, day=dm2.day, hour=dm2.hour, minute=t2.minute))
 
 
 @rule(
