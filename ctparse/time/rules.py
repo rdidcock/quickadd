@@ -368,9 +368,24 @@ def ruleLatentPOD(ts: datetime, pm_bias: bool, date_format: str, pod: Time) -> T
 def ruleLatentTime(ts: datetime, pm_bias: bool, date_format: str, t: Time) -> Time:
     # new rule added, adjusts HHMM time to allow past time
     dm = ts - relativedelta(hour=t.hour)
-    if dm >= ts:
+    if dm > ts:
         dm -= relativedelta(days=1)
     return Time(year=dm.year, month=dm.month, day=dm.day, hour=dm.hour, minute=t.minute)
+
+
+@rule(dimension(Interval))
+def ruleLatentTimeInterval(ts: datetime, pm_bias: bool, date_format: str, t: Interval) -> Interval:
+    # new rule for HHMM to allow past time
+    t1, t2 = t.t_from, t.t_to
+    dm1 = ts - relativedelta(hour=t1.hour)
+    dm2 = ts - relativedelta(hour=t2.hour)
+    if dm1 >= ts:
+        dm1 -= relativedelta(days=1)
+        dm2 -= relativedelta(days=1)
+    if dm2 < dm1:
+        dm1 -= relativedelta(days=1)
+    return Interval(t_from=Time(year=dm1.year, month=dm1.month, day=dm1.day, hour=dm1.hour, minute=t1.minute),
+                    t_to=Time(year=dm2.year, month=dm2.month, day=dm2.day, hour=dm2.hour, minute=t2.minute))
 
 
 @rule(
@@ -923,7 +938,7 @@ _rule_durations = r"({})\s*".format(_rule_durations)
 
 
 # Rules regarding durations
-@rule(r"(in)\s*" + r"(?P<num>\d+)\s*" + _rule_durations)
+@rule(r"(?P<num>\d+)\s*" + _rule_durations)
 def ruleDigitDuration(ts: datetime, pm_bias: bool, date_format: str, m: RegexMatch) -> Optional[Duration]:
     # 1 day, 1 night etc.
     num = m.match.group("num")
@@ -936,7 +951,7 @@ def ruleDigitDuration(ts: datetime, pm_bias: bool, date_format: str, m: RegexMat
     return None
 
 
-@rule(r"(in)\s*" + _rule_named_number + _rule_durations)
+@rule(_rule_named_number + _rule_durations)
 def ruleNamedNumberDuration(ts: datetime, pm_bias: bool, date_format: str, m: RegexMatch) -> Optional[Duration]:
     # one day, two nights, thirty days etc.
     num = None
@@ -955,7 +970,7 @@ def ruleNamedNumberDuration(ts: datetime, pm_bias: bool, date_format: str, m: Re
     return None
 
 
-@rule(r"(in)\s*" + r"(hal[fb]e?|1/2)(\s+an?)?\s*" + _rule_durations)
+@rule(r"(in|past|last)\s*" + r"(hal[fb]e?|1/2)(\s+an?)?\s*" + _rule_durations)
 def ruleDurationHalf(ts: datetime, pm_bias: bool, date_format: str, m: RegexMatch) -> Optional[Duration]:
     # half day, half hour, 1/2 hour
     for n, _, in _durations:
