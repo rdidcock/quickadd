@@ -275,9 +275,9 @@ def ruleMonthDOM(ts: datetime, pm_bias: bool, date_format: str, m: Time, dom: Ti
 
 @rule(r"am|diese(n|m)|at|on|this", predicate("isDOW"))
 def ruleAtDOW(ts: datetime, pm_bias: bool, date_format: str, _: RegexMatch, dow: Time) -> Time:
-    dm = ts + relativedelta(weekday=dow.DOW)
-    if dm.date() == ts.date():
-        dm += relativedelta(weeks=1)
+    dm = ts - relativedelta(weekday=dow.DOW)
+    # if dm.date() == ts.date():
+    #     dm += relativedelta(weeks=1)
     return Time(year=dm.year, month=dm.month, day=dm.day)
 
 
@@ -328,41 +328,49 @@ def ruleDateDOW(ts: datetime, pm_bias: bool, date_format: str, date: Time, dow: 
 
 
 # LatentX: handle time entities that are not grounded to a date yet
-# and assume the next date+time in the future
+# and assume the most recent date+time in the past
 @rule(predicate("isDOM"))
 def ruleLatentDOM(ts: datetime,pm_bias: bool, date_format: str, dom: Time) -> Time:
-    dm = ts + relativedelta(day=dom.day)
-    if dm <= ts:
-        dm += relativedelta(months=1)
+    dm = ts - relativedelta(day=dom.day)
+    if dm >= ts:
+        dm -= relativedelta(months=1)
     return Time(year=dm.year, month=dm.month, day=dm.day)
 
 
 @rule(predicate("isDOW"))
 def ruleLatentDOW(ts: datetime, pm_bias: bool, date_format: str, dow: Time) -> Time:
-    dm = ts + relativedelta(weekday=dow.DOW)
-    if dm <= ts:
-        dm += relativedelta(weeks=1)
+    dm = ts - relativedelta(weekday=dow.DOW)
+    if dm >= ts:
+        dm -= relativedelta(weeks=1)
     return Time(year=dm.year, month=dm.month, day=dm.day)
 
 
 @rule(predicate("isDOY"))
 def ruleLatentDOY(ts: datetime, pm_bias: bool, date_format: str, doy: Time) -> Time:
-    dm = ts + relativedelta(month=doy.month, day=doy.day)
-    if dm < ts:
-        dm += relativedelta(years=1)
+    dm = ts - relativedelta(month=doy.month, day=doy.day)
+    if dm > ts:
+        dm -= relativedelta(years=1)
     return Time(year=dm.year, month=dm.month, day=dm.day)
 
 
 @rule(predicate("isPOD"))
 def ruleLatentPOD(ts: datetime, pm_bias: bool, date_format: str, pod: Time) -> Time:
     # Set the time to the pre-defined POD values, but keep the POD
-    # information. The date is chosen based on what ever is the next
-    # possible slot for these times
+    # information. The date is chosen based most recent occurrence
     h_from, h_to = pod_hours[pod.POD]
-    t_from = ts + relativedelta(hour=h_from, minute=0)
-    if t_from <= ts:
-        t_from += relativedelta(days=1)
+    t_from = ts - relativedelta(hour=h_from, minute=0)
+    if t_from >= ts:
+        t_from -= relativedelta(days=1)
     return Time(year=t_from.year, month=t_from.month, day=t_from.day, POD=pod.POD)
+
+
+@rule(predicate("hasTime"))
+def ruleLatentTime(ts: datetime, pm_bias: bool, date_format: str, t: Time) -> Time:
+    # new rule added, adjusts HHMM time to allow past time
+    dm = ts - relativedelta(hour=t.hour)
+    if dm >= ts:
+        dm -= relativedelta(days=1)
+    return Time(year=dm.year, month=dm.month, day=dm.day, hour=dm.hour, minute=t.minute)
 
 
 @rule(
@@ -1353,9 +1361,9 @@ def ruleRecurringTimeInterval2(ts: datetime, pm_bias: bool, date_format: str, t:
 @rule(r"(every|each)\s*", predicate("isDOW"))
 def ruleRecurringDOW(ts: datetime, pm_bias: bool, date_format: str, m: RegexMatch, dow: Time) -> Optional[Recurring]:
     # every thursday
-    dm = ts + relativedelta(weekday=dow.DOW)
-    if dm <= ts:
-        dm += relativedelta(weeks=1)
+    dm = ts - relativedelta(weekday=dow.DOW)
+    if dm >= ts:
+        dm -= relativedelta(weeks=1)
     time = Time(year=dm.year, month=dm.month, day=dm.day, DOW=dow.DOW)
     return Recurring(frequency=RecurringFrequency.WEEKLY.value, interval=1, start_time=time, end_time=time, byday=dm.weekday())
 
@@ -1363,9 +1371,9 @@ def ruleRecurringDOW(ts: datetime, pm_bias: bool, date_format: str, m: RegexMatc
 @rule(r"(every|each)\s*", predicate('isDOY'))
 def ruleRecurringDOY(ts: datetime, pm_bias: bool, date_format: str, m: RegexMatch, doy: Time) -> Optional[Recurring]:
     # every 23.9 / every september 3rd
-    dm = ts + relativedelta(month=doy.month, day=doy.day)
-    if dm <= ts:
-        dm += relativedelta(years=1)
+    dm = ts - relativedelta(month=doy.month, day=doy.day)
+    if dm >= ts:
+        dm -= relativedelta(years=1)
     time = Time(year=dm.year, month=doy.month, day=doy.day)
     return Recurring(frequency=RecurringFrequency.YEARLY.value, interval=1, start_time=time, end_time=time, byday=dm.weekday())
 
@@ -1378,9 +1386,9 @@ def ruleRecurringIntervalDOW(ts: datetime, pm_bias: bool, date_format: str, m: R
         match = m.match.group("n_{}".format(i))
         if match:
             itv = i
-    dm = ts + relativedelta(weekday=dow.DOW)
-    if dm <= ts:
-        dm += relativedelta(weeks=1)
+    dm = ts - relativedelta(weekday=dow.DOW)
+    if dm >= ts:
+        dm -= relativedelta(weeks=1)
     time = Time(year=dm.year, month=dm.month, day=dm.day, DOW=dow.DOW)
     return Recurring(frequency=RecurringFrequency.WEEKLY.value, interval=itv, start_time=time, end_time=time, byday=dm.weekday())
 
@@ -1391,9 +1399,9 @@ def ruleRecurringDOWS(ts: datetime, pm_bias: bool, date_format: str, m: RegexMat
     for i, (name, _) in enumerate(_recurring_dows):
         if m.match.group(name):
             dow = i
-            dm = ts + relativedelta(weekday=dow)
-            if dm <= ts:
-                dm += relativedelta(weeks=1)
+            dm = ts - relativedelta(weekday=dow)
+            if dm >= ts:
+                dm -= relativedelta(weeks=1)
             time = Time(year=dm.year, month=dm.month, day=dm.day, DOW=dow)
             return Recurring(frequency=RecurringFrequency.WEEKLY.value, interval=1, start_time=time, end_time=time, byday=dm.weekday())
     return None
@@ -1408,14 +1416,14 @@ def ruleRecurringSimpleDOWDOW(ts: datetime, pm_bias: bool, date_format: str, rec
 @rule(r"(every|each)\s*", predicate("isDOW"), r"(and)\s*", predicate("isDOW"))
 def ruleRecurringDOWDOW(ts: datetime, pm_bias: bool, date_format: str, m1: RegexMatch, dow1: Time, m2: RegexMatch, dow2: Time) -> Optional[Recurring]:
     # every thursday and wednesday
-    dm = ts + relativedelta(weekday=dow1.DOW)
-    if dm <= ts:
-        dm += relativedelta(weeks=1)
+    dm = ts - relativedelta(weekday=dow1.DOW)
+    if dm >= ts:
+        dm -= relativedelta(weeks=1)
     time1 = Time(year=dm.year, month=dm.month, day=dm.day, DOW=dow1.DOW)
 
-    dm2 = ts + relativedelta(weekday=dow2.DOW)
-    if dm2 <= ts:
-        dm2 += relativedelta(weeks=1)
+    dm2 = ts - relativedelta(weekday=dow2.DOW)
+    if dm2 >= ts:
+        dm2 -= relativedelta(weeks=1)
     time2 = Time(year=dm2.year, month=dm2.month, day=dm2.day, DOW=dow2.DOW)
 
     return Recurring(frequency=RecurringFrequency.WEEKLY.value, interval=1, start_time=time1, end_time=time1, byday=(time1.dt.weekday(), time2.dt.weekday()))
@@ -1427,13 +1435,13 @@ def ruleRecurringWeekdays(ts: datetime, pm_bias: bool, date_format: str, m: Rege
     dows = (0, 1, 2, 3, 4)
 
     for dow in dows:
-        dm = ts + relativedelta(weekday=dow)
-        if dm <= ts:
-            dm += relativedelta(weeks=1)
-            time = Time(year=dm.year, month=dm.month, day=dm.day, hour=t.hour, minute=t.minute)
+        dm = ts - relativedelta(weekday=dow)
         if dm >= ts:
-            dm += relativedelta(weekday=dow)
+            dm -= relativedelta(weeks=1)
             time = Time(year=dm.year, month=dm.month, day=dm.day, hour=t.hour, minute=t.minute)
+        # if dm >= ts:
+        #     dm += relativedelta(weekday=dow)
+        #     time = Time(year=dm.year, month=dm.month, day=dm.day, hour=t.hour, minute=t.minute)
 
     return Recurring(frequency=RecurringFrequency.WEEKLY.value, interval=1, start_time=time, end_time=time,
                      byday=dows)
@@ -1445,13 +1453,13 @@ def ruleRecurringWeekdays2(ts: datetime, pm_bias: bool, date_format: str, t: Tim
     dows = (0, 1, 2, 3, 4)
 
     for dow in dows:
-        dm = ts + relativedelta(weekday=dow)
-        if dm <= ts:
-            dm += relativedelta(weeks=1)
-            time = Time(year=dm.year, month=dm.month, day=dm.day, hour=t.hour, minute=t.minute)
+        dm = ts - relativedelta(weekday=dow)
         if dm >= ts:
-            dm += relativedelta(weekday=dow)
+            dm -= relativedelta(weeks=1)
             time = Time(year=dm.year, month=dm.month, day=dm.day, hour=t.hour, minute=t.minute)
+        # if dm >= ts:
+        #     dm += relativedelta(weekday=dow)
+        #     time = Time(year=dm.year, month=dm.month, day=dm.day, hour=t.hour, minute=t.minute)
 
     return Recurring(frequency=RecurringFrequency.WEEKLY.value, interval=1, start_time=time, end_time=time,
                      byday=dows)
