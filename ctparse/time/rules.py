@@ -421,7 +421,7 @@ def ruleDDMM(ts: datetime, pm_bias: bool, date_format: str, m: RegexMatch) -> Ti
 
 
 @rule(
-    r"(?<!\d|\.)((?P<month>(?&_month))|(?P<named_month>({})))[\.\/\-]"
+    r"(?<!\d|\.)((?P<month>(?&_month))|(?P<named_month>({})))[\.\/]"
     r"(?P<day>(?&_day))"
     r"(?!\d|am|\s*pm)".format(_rule_months),
     date_format="US"
