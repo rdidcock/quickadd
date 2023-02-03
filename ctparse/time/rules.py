@@ -946,7 +946,7 @@ _rule_durations = r"({})\s*".format(_rule_durations)
 
 
 # Rules regarding durations
-@rule(r"(last|past)\s*" + _rule_durations)
+@rule(r"(last|past|this)\s*" + _rule_durations)
 def ruleDuration(ts: datetime, pm_bias: bool, date_format: str, m: RegexMatch) -> Optional[Duration]:
     # number isn't named/specified
     # last week, past week, past hour
