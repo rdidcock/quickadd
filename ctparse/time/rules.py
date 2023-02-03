@@ -42,18 +42,18 @@ def ruleNamedDOW(ts: datetime, pm_bias: bool, date_format: str, m: RegexMatch) -
 
 
 _months = [
-    ("january", r"\bjanuary?\b|\bjan\.?\b"),
-    ("february", r"\bfebruary?\b|\bfeb\.?\b"),
-    ("march", r"\bmärz\b|\bmarch\b|\bmar\.?\b|\bmrz\.?\b|\bmär\.?\b"),
-    ("april", r"\bapril\b|\bapr\.?\b"),
-    ("may", r"\bmai\b|\bmay\.?\b"),
-    ("june", r"\bjuni\b|\bjune\b|\bjun\.?\b"),
-    ("july", r"\bjuli\b|\bjuly\b|\bjul\.?\b"),
-    ("august", r"\baugust\b|\baug\.?\b"),
-    ("september", r"\bseptember\b|\bsept?\.?\b"),
-    ("october", r"\boktober\b|\boctober\b|\boct\.?\b|\bokt\.?\b"),
-    ("november", r"\bnovember\b|\bnov\.?\b"),
-    ("december", r"\bdecember\b|\bdezember\b|\bdez\.?\b|\bdec\.?\b"),
+    ("january", r"(january?){e<=1}|jan\.?"),
+    ("february", r"(february?){e<=1}|feb\.?"),
+    ("march", r"märz|(march){e<=1}|mar\.?|mrz\.?|mär\.?"),
+    ("april", r"(april){e<=1}|apr\.?"),
+    ("may", r"mai|may\.?"),
+    ("june", r"juni|juno|june|jun\.?"),
+    ("july", r"juli|july|jul\.?"),
+    ("august", r"(august){e<=1}|aug\.?"),
+    ("september", r"(september){e<=1}|sept?\.?"),
+    ("october", r"(oktober){e<=1}|(october){e<=1}|oct\.?|okt\.?"),
+    ("november", r"(november){e<=1}|nov\.?"),
+    ("december", r"(december){e<=1}|(dezember){e<=1}|dez\.?|dec\.?"),
 ]
 _rule_months = "|".join(r"(?P<{}>{})".format(name, expr) for name, expr in _months)
 
@@ -92,6 +92,8 @@ def ruleNamedHour(ts: datetime, pm_bias: bool, date_format: str, m: RegexMatch) 
         if match.group("t_{}".format(n)):
             return Time(hour=n, minute=0)
     return None
+
+
 
 
 @rule("mitternacht|midnight")
@@ -273,11 +275,13 @@ def ruleMonthDOM(ts: datetime, pm_bias: bool, date_format: str, m: Time, dom: Ti
     return Time(month=m.month, day=dom.day)
 
 
-@rule(r"am|diese(n|m)|at|on|this", predicate("isDOW"))
+@rule(r"am|diese(n|m)|at|on|this|last", predicate("isDOW"))
 def ruleAtDOW(ts: datetime, pm_bias: bool, date_format: str, _: RegexMatch, dow: Time) -> Time:
     dm = ts - relativedelta(weekday=dow.DOW)
+    # TODO do we want to prevent returning today if that is recent occurence of that date?
+    # if _.match.group() == "last" and dm.date() == ts.date():
     # if dm.date() == ts.date():
-    #     dm += relativedelta(weeks=1)
+    #     dm -= relativedelta(weeks=1)
     return Time(year=dm.year, month=dm.month, day=dm.day)
 
 
@@ -364,32 +368,36 @@ def ruleLatentPOD(ts: datetime, pm_bias: bool, date_format: str, pod: Time) -> T
     return Time(year=t_from.year, month=t_from.month, day=t_from.day, POD=pod.POD)
 
 
-# @rule(predicate("hasTime"))
-# def ruleLatentTime(ts: datetime, pm_bias: bool, date_format: str, t: Time) -> Time:
-#     # new rule added, adjusts HHMM time to allow past time
-#     dm = ts - relativedelta(hour=t.hour)
-#     if dm > ts:
-#         dm -= relativedelta(days=1)
-#     return Time(year=dm.year, month=dm.month, day=dm.day, hour=dm.hour, minute=t.minute)
-#
-#
-# @rule(dimension(Interval))
-# def ruleLatentTimeInterval(ts: datetime, pm_bias: bool, date_format: str, t: Interval) -> Interval:
-#     # new rule for HHMM to allow past time
-#     t1, t2 = t.t_from, t.t_to
-#     dm1 = ts - relativedelta(hour=t1.hour)
-#     dm2 = ts - relativedelta(hour=t2.hour)
-#     if dm1 >= ts:
-#         dm1 -= relativedelta(days=1)
-#         dm2 -= relativedelta(days=1)
-#     if dm2 < dm1:
-#         dm1 -= relativedelta(days=1)
-#     return Interval(t_from=Time(year=dm1.year, month=dm1.month, day=dm1.day, hour=dm1.hour, minute=t1.minute),
-#                     t_to=Time(year=dm2.year, month=dm2.month, day=dm2.day, hour=dm2.hour, minute=t2.minute))
+@rule(predicate("hasTime"))
+def ruleLatentTime(ts: datetime, pm_bias: bool, date_format: str, t: Time) -> Time:
+    # adjusts time not grounded by date to today regardless of it is has passed
+    dm = ts - relativedelta(hour=t.hour)
+    if dm > ts:
+        dm -= relativedelta(days=1)
+    return Time(year=t.year if t.year else dm.year, month=t.month if t.month else dm.month, day=t.day if t.day else dm.day, hour=dm.hour, minute=t.minute)
+
+
+@rule(dimension(Interval))
+def ruleLatentTimeInterval(ts: datetime, pm_bias: bool, date_format: str, i: Interval) -> Optional[Interval]:
+    t_from, t_to = i.t_from, i.t_to
+    t1, t2 = None, None
+    if t_from:
+        if t_from.hasTime:
+            dm1 = ts - relativedelta(hour=t_from.hour)
+            if dm1 > ts:
+                dm1 -= relativedelta(days=1)
+            t1 = Time(year=t_from.year if t_from.year else dm1.year, month=t_from.month if t_from.month else dm1.month, day=t_from.day if t_from.day else dm1.day, hour=dm1.hour, minute=t_from.minute)
+    if t_to:
+        if t_to.hasTime:
+            dm2 = ts - relativedelta(hour=t_to.hour)
+            if dm2 > ts:
+                dm2 -= relativedelta(days=1)
+            t2 = Time(year=t_to.year if t_to.year else dm2.year, month=t_to.month if t_to.month else dm2.month, day=t_to.day if t_to.day else dm2.day, hour=dm2.hour, minute=t_to.minute)
+    return Interval(t_from = t1 if t1 else t_from, t_to = t2 if t2 else t_to)
 
 
 @rule(
-    r"(?<!\d|\.)(?P<day>(?&_day))[\.\/]"  # removed \-
+    r"(?<!\d|\.)(?P<day>(?&_day))[\.\/\-]"  # removed \-
     r"((?P<month>(?&_month))|(?P<named_month>({})))\.?"
     r"(?!\d|am|\s*pm)".format(_rule_months),
     date_format="EU"
@@ -413,7 +421,7 @@ def ruleDDMM(ts: datetime, pm_bias: bool, date_format: str, m: RegexMatch) -> Ti
 
 
 @rule(
-    r"(?<!\d|\.)((?P<month>(?&_month))|(?P<named_month>({})))[\.\/]"
+    r"(?<!\d|\.)((?P<month>(?&_month))|(?P<named_month>({})))[\.\/\-]"
     r"(?P<day>(?&_day))"
     r"(?!\d|am|\s*pm)".format(_rule_months),
     date_format="US"
@@ -429,8 +437,8 @@ def ruleMMDD(ts: datetime, pm_bias: bool, date_format: str, m: RegexMatch) -> Ti
 
 
 @rule(
-    r"(?<!\d|\.)(?P<day>(?&_day))[\/\.]"
-    r"((?P<month>(?&_month))|(?P<named_month>({})))[\/\.]"
+    r"(?<!\d|\.)(?P<day>(?&_day))[\/\.\-]"
+    r"((?P<month>(?&_month))|(?P<named_month>({})))[\/\.\-]"
     r"(?P<year>(?&_year))(?!\d)".format(_rule_months),
     date_format="EU"
 )
@@ -454,8 +462,8 @@ def ruleDDMMYYYY(ts: datetime, pm_bias: bool, date_format: str, m: RegexMatch) -
 
 
 @rule(
-    r"(?<!\d|\.)\s*((?P<month>(?&_month))|(?P<named_month>({})))\s*[\/\.]"
-    r"(?P<day>(?&_day))\s*[\/\.]"
+    r"(?<!\d|\.)\s*((?P<month>(?&_month))|(?P<named_month>({})))\s*[\/\.\-]"
+    r"(?P<day>(?&_day))\s*[\/\.\-]"
     r"\s*(?P<year>(?&_year))(?!\d)".format(_rule_months),
     date_format="US"
 )
@@ -548,7 +556,7 @@ def ruleHHMMmilitary(ts: datetime, pm_bias: bool, date_format: str, m: RegexMatc
     r"(?<!\d)"  # We don't start matching with another number, or a dot
     r"(?P<hour>(?&_hour))"  # We certainly match an hour
     # We try to match also the minute
-    r"((?P<sep>:|uhr|h|)(?P<minute>(?&_minute)))?"
+    r"((?P<sep>:|uhr|h| )(?P<minute>(?&_minute)))?"
     r"\s*(?P<clock>uhr|h)?"  # We match uhr with no minute
     r"(?P<ampm>\s*[ap]\.?m\.?)?"  # AM PM
     r"(?!\d)"
@@ -922,7 +930,7 @@ _rule_named_number = "|".join(
 _rule_named_number = r"({})\s*".format(_rule_named_number)
 
 _durations = [
-    (DurationUnit.NIGHTS, r"\bn[aä]chte?\b|\bnights?\b|\b[üu]bernachtung\b"),
+    # (DurationUnit.NIGHTS, r"\bn[aä]chte?\b|\bnights?\b|\b[üu]bernachtung\b"),
     (DurationUnit.DAYS, r"\btage?\b|days?|d"),
     (DurationUnit.MINUTES, r"\bmins?\b|m(inute[ns]?)?"),
     (DurationUnit.HOURS, r"\bstunden?\b|h(ours?)?|h|hrs?"),
@@ -938,7 +946,60 @@ _rule_durations = r"({})\s*".format(_rule_durations)
 
 
 # Rules regarding durations
-@rule(r"(in)\s*" + r"(?P<num>\d+)\s*" + _rule_durations)
+@rule(r"(last|past)\s*" + _rule_durations)
+def ruleDuration(ts: datetime, pm_bias: bool, date_format: str, m: RegexMatch) -> Optional[Duration]:
+    # number isn't named/specified
+    # last week, past week, past hour
+    for n, _, in _durations:
+        unit = m.match.group("d_" + n.value)
+        if unit:
+            return Duration(int(1), n)
+    return None
+
+
+@rule(r"(?P<num>\d+)\s*" + _rule_durations + r"\s*(ago)")
+def ruleDigitDurationAgo(ts: datetime, pm_bias: bool, date_format: str, m: RegexMatch) -> Optional[Duration]:
+    # 1 day, 1 night etc.
+    num = m.match.group("num")
+    if num:
+        for n, _, in _durations:
+            unit = m.match.group("d_" + n.value)
+            if unit:
+                return Duration(int(num), n)
+    return None
+
+
+@rule(_rule_named_number + _rule_durations + r"\s*(ago)")
+def ruleNamedNumberDurationAgo(ts: datetime, pm_bias: bool, date_format: str, m: RegexMatch) -> Optional[Duration]:
+    # one day, two nights, thirty days etc.
+    num = None
+    for n, _ in _named_number:
+        match = m.match.group("n_{}".format(n))
+        if match:
+            num = n
+            continue
+
+    if num:
+        for d, _, in _durations:
+            unit = m.match.group("d_" + d.value)
+            if unit:
+                return Duration(num, d)
+    return None
+
+
+@rule(r"(hal[fb]e?|1/2)(\s+an?)?\s*" + _rule_durations + r"\s*(ago)")
+def ruleDurationHalf(ts: datetime, pm_bias: bool, date_format: str, m: RegexMatch) -> Optional[Duration]:
+    # half day, half hour, 1/2 hour
+    for n, _, in _durations:
+        if m.match.group("d_" + n.value):
+            if n == DurationUnit.HOURS:
+                return Duration(30, DurationUnit.MINUTES)
+            if n == DurationUnit.DAYS:
+                return Duration(12, DurationUnit.HOURS)
+    return None
+
+
+@rule(r"(in|last|past)\s*" + r"(?P<num>\d+)\s*" + _rule_durations)
 def ruleDigitDuration(ts: datetime, pm_bias: bool, date_format: str, m: RegexMatch) -> Optional[Duration]:
     # 1 day, 1 night etc.
     num = m.match.group("num")
@@ -947,11 +1008,10 @@ def ruleDigitDuration(ts: datetime, pm_bias: bool, date_format: str, m: RegexMat
             unit = m.match.group("d_" + n.value)
             if unit:
                 return Duration(int(num), n)
-
     return None
 
 
-@rule(r"(in)\s*" + _rule_named_number + _rule_durations)
+@rule(r"(in|last|past)\s*" + _rule_named_number + _rule_durations)
 def ruleNamedNumberDuration(ts: datetime, pm_bias: bool, date_format: str, m: RegexMatch) -> Optional[Duration]:
     # one day, two nights, thirty days etc.
     num = None
@@ -966,11 +1026,10 @@ def ruleNamedNumberDuration(ts: datetime, pm_bias: bool, date_format: str, m: Re
             unit = m.match.group("d_" + d.value)
             if unit:
                 return Duration(num, d)
-
     return None
 
 
-@rule(r"(in)\s*" + r"(hal[fb]e?|1/2)(\s+an?)?\s*" + _rule_durations)
+@rule(r"(in|last|past)\s*" + r"(hal[fb]e?|1/2)(\s+an?)?\s*" + _rule_durations)
 def ruleDurationHalf(ts: datetime, pm_bias: bool, date_format: str, m: RegexMatch) -> Optional[Duration]:
     # half day, half hour, 1/2 hour
     for n, _, in _durations:
@@ -1421,6 +1480,30 @@ def ruleRecurringDOWS(ts: datetime, pm_bias: bool, date_format: str, m: RegexMat
             return Recurring(frequency=RecurringFrequency.WEEKLY.value, interval=1, start_time=time, end_time=time, byday=dm.weekday())
     return None
 
+_plural_pods = [
+    ("morning", r"\bmornings\b|\bmorgend?s?\b"),
+    ("forenoon", r"\bforenoons\b|\bvormittags?\b"),
+    ("afternoon", r"\bafternoons\b|\bnachmittags?\b"),
+    ("noon", r"\bnoons\b|\bmittags?\b"),
+    ("evening", r"\bevenings\b|\btonight\b|\babend?s?\b|\bspät\b"),
+    ("night", r"\bnights\b|\bnachts?\b"),
+]
+
+_rule_plural_pods = "|".join("(?P<{}>{})".format(pod, expr) for pod, expr in _plural_pods)
+
+@rule(predicate("isDOW"), _rule_plural_pods)
+def ruleRecurringDOWPODs(ts: datetime, pm_bias: bool, date_format: str, dow: Time,  m: RegexMatch) -> Optional[RecurringArray]:
+    POD = None
+    dm = ts - relativedelta(weekday=dow.DOW)
+    if dm >= ts:
+        dm -= relativedelta(weeks=1)
+    for _, (pod, _) in enumerate(_plural_pods):
+        if m.match.group(pod):
+            POD = pod
+    time = Time(year=dm.year, month=dm.month, day=dm.day, DOW=dow.DOW, POD=POD)
+    return Recurring(frequency=RecurringFrequency.WEEKLY.value, interval=1, start_time=time, end_time=time,
+                     byday=dm.weekday())
+
 
 @rule(dimension(Recurring), r"(and)\s*", dimension(Recurring))
 def ruleRecurringSimpleDOWDOW(ts: datetime, pm_bias: bool, date_format: str, rec1: Recurring, m: RegexMatch, rec2: Recurring) -> Optional[Recurring]:
@@ -1514,17 +1597,3 @@ def ruleNextFrequency(ts: datetime, pm_bias: bool, date_format: str, m: RegexMat
     return None
 
 
-@rule(r"(last)\s*" + _rule_dows)
-def ruleLastDOM(ts: datetime, pm_bias: bool, date_format: str, m: RegexMatch):
-    # last monday of the month
-    for i, (name, _) in enumerate(_dows):
-        if m.match.group(name):
-            dom = i
-            break
-    last_dom = (datetime.now().replace(day=1) + timedelta(days=32)).replace(day=1)
-    while True:
-        last_dom -= timedelta(days=1)
-        if last_dom.weekday() == dom:
-            return Time(month=last_dom.month, day=last_dom.day)
-
-    return None
