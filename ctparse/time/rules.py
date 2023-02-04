@@ -988,7 +988,7 @@ def ruleNamedNumberDurationAgo(ts: datetime, pm_bias: bool, date_format: str, m:
 
 
 @rule(r"(hal[fb]e?|1/2)(\s+an?)?\s*" + _rule_durations + r"\s*(ago)")
-def ruleDurationHalf(ts: datetime, pm_bias: bool, date_format: str, m: RegexMatch) -> Optional[Duration]:
+def ruleDurationHalfAgo(ts: datetime, pm_bias: bool, date_format: str, m: RegexMatch) -> Optional[Duration]:
     # half day, half hour, 1/2 hour
     for n, _, in _durations:
         if m.match.group("d_" + n.value):
