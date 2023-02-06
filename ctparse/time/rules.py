@@ -393,7 +393,7 @@ def ruleLatentTimeInterval(ts: datetime, pm_bias: bool, date_format: str, i: Int
             if dm2 > ts:
                 dm2 -= relativedelta(days=1)
             t2 = Time(year=t_to.year if t_to.year else dm2.year, month=t_to.month if t_to.month else dm2.month, day=t_to.day if t_to.day else dm2.day, hour=dm2.hour, minute=t_to.minute)
-    return Interval(t_from = t1 if t1 else t_from, t_to = t2 if t2 else t_to)
+    return Interval(t_from=t1 if t1 else t_from, t_to=t2 if t2 else t_to)
 
 
 @rule(
@@ -707,13 +707,13 @@ def ruleDateDOM(ts: datetime, pm_bias: bool, date_format: str, d1: Time, _: Rege
     return Interval(t_from=d1, t_to=Time(year=d1.year, month=d1.month, day=d2.day))
 
 
-@rule(predicate("isDOY"), _regex_to_join, predicate("isDate"))
-def ruleDOYDate(ts: datetime, pm_bias: bool, date_format: str, d1: Time, _: RegexMatch, d2: Time) -> Optional[Interval]:
+@rule(predicate("isDate"), _regex_to_join, predicate("isDOY"))
+def ruleDateDOY(ts: datetime, pm_bias: bool, date_format: str, d1: Time, _: RegexMatch, d2: Time) -> Optional[Interval]:
     if d1.month > d2.month:
         return None
     elif d1.month == d2.month and d1.day >= d2.day:
         return None
-    return Interval(t_from=Time(year=d2.year, month=d1.month, day=d1.day), t_to=d2)
+    return Interval(t_from=d1, t_to=Time(year=d1.year, month=d2.month, day=d2.day))
 
 
 @rule(predicate("isDateTime"), _regex_to_join, predicate("isDateTime"))
@@ -721,7 +721,7 @@ def ruleDateTimeDateTime(
     ts: datetime, pm_bias: bool, date_format: str, d1: Time, _: RegexMatch, d2: Time
 ) -> Optional[Interval]:
     if d1.year > d2.year:
-        return None
+        d2.year = d1.year
     if d1.year == d2.year and d1.month > d2.month:
         return None
     if d1.year == d2.year and d1.month == d2.month and d1.day > d2.day:

@@ -5,7 +5,7 @@ from ctparse.time.rules import (
     ruleDateDate,
     ruleDOMDate,
     ruleDateTimeDateTime,
-    ruleDOYDate,
+    ruleDateDOY,
     ruleQuarterBeforeHH,
     ruleQuarterAfterHH,
 )
@@ -75,14 +75,14 @@ class TestRules(TestCase):
         t2 = Time(year=2017, month=4, day=12, hour=12, minute=31)
         self.assertIsNotNone(ruleDateTimeDateTime(None, t1, None, t2))
 
-    def test_ruleDOYDate(self):
+    def test_ruleDateDOY(self):
         t1 = Time(month=4, day=12)
         t2 = Time(year=2017, month=4, day=12)
-        self.assertIsNone(ruleDOYDate(None, t1, None, t2))
+        self.assertIsNone(ruleDateDOY(None, t1, None, t2))
 
         t1 = Time(month=4, day=12)
         t2 = Time(year=2017, month=4, day=13)
-        self.assertIsNotNone(ruleDOYDate(None, t1, None, t2))
+        self.assertIsNotNone(ruleDateDOY(None, t1, None, t2))
 
     def test_ruleQuarterBeforeHH(self):
         t1 = Time(hour=12, minute=1)
