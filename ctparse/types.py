@@ -539,19 +539,19 @@ class Duration(Artifact):
 
     def time(self, ts: datetime) -> Time:
         if self.unit == DurationUnit.MINUTES:
-            dm = ts + relativedelta(minutes=+self.value)
+            dm = ts - relativedelta(minutes=+self.value)
             return Time(year=dm.year, month=dm.month, day=dm.day, hour=dm.hour, minute=dm.minute)
         if self.unit == DurationUnit.HOURS:
-            dm = ts + relativedelta(hours=+self.value)
+            dm = ts - relativedelta(hours=+self.value)
             return Time(year=dm.year, month=dm.month, day=dm.day, hour=dm.hour, minute=dm.minute)
         if self.unit == DurationUnit.DAYS:
-            dm = ts + relativedelta(days=+self.value)
+            dm = ts - relativedelta(days=+self.value)
         if self.unit == DurationUnit.WEEKS:
-            dm = ts + relativedelta(days=+self.value*7)
+            dm = ts - relativedelta(days=+self.value*7)
         if self.unit == DurationUnit.MONTHS:
-            dm = ts + relativedelta(months=+self.value)
+            dm = ts - relativedelta(months=+self.value)
         if self.unit == DurationUnit.YEARS:
-            dm = ts + relativedelta(years=+self.value)
+            dm = ts - relativedelta(years=+self.value)
 
         return Time(year=dm.year, month=dm.month, day=dm.day)
 
