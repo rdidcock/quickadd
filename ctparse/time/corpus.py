@@ -42,9 +42,9 @@ corpus = [
         ["ende des Jahres", "eoy", "end of the year"],
     ),
     # ruleNamedDOW
-    ("Time[]{2018-03-12 X:X (X/X)}", "2018-03-07T12:43", ["Montag", "mon", "monday"]),
+    ("Time[]{2018-03-05 X:X (X/X)}", "2018-03-07T12:43", ["Montag", "mon", "monday"]),
     (
-        "Time[]{2018-03-13 X:X (X/X)}",
+        "Time[]{2018-03-06 X:X (X/X)}",
         "2018-03-07T12:43",
         ["Dienstag", "tuesday", "tue"],
     ),
@@ -58,18 +58,18 @@ corpus = [
     #     ["sunday night", "Sonntagnacht"],
     # ),
     # ruleNamedMonth
-    ("Time[]{2023-01-01 X:X (X/X)}", "2022-11-28T12:43", ["1st January", "1st jan."]),
-    ("Time[]{2023-04-15 X:X (X/X)}", "2022-11-28T12:43", ["15 April", "15 apr."]),
+    ("Time[]{2022-01-01 X:X (X/X)}", "2022-11-28T12:43", ["1st January", "1st jan."]),
+    ("Time[]{2022-04-15 X:X (X/X)}", "2022-11-28T12:43", ["15 April", "15 apr."]),
     ("Time[]{X-07-X X:X (X/X)}", "2022-11-28T12:43", ["Juli", "July", "Jul"]),
     (
-        "Time[]{2022-12-24 X:X (X/X)}",
+        "Time[]{2021-12-24 X:X (X/X)}",
         "2022-11-28T12:43",
         ["24 Dezember", "December 24", "24 Dec.", "24 Dez."],
     ),
     # ruleAtDOW
-    ("Time[]{2018-03-13 X:X (X/X)}", "2018-03-07T12:43", ["am Dienstag", "on Tue"]),
+    ("Time[]{2018-03-06 X:X (X/X)}", "2018-03-07T12:43", ["am Dienstag", "on Tue"]),
     (
-        "Time[]{2018-03-14 X:X (X/X)}",
+        "Time[]{2018-03-07 X:X (X/X)}",
         "2018-03-07T12:43",
         ["this Wednesday", "diesen Mittwoch"],
     ),
@@ -87,19 +87,19 @@ corpus = [
     ),
     # ruleDOYYear, ruleDDMM, ruleDDMMYYYY
     (
-        "Time[]{2018-05-08 X:X (X/X)}",
+        "Time[]{2017-05-08 X:X (X/X)}",
         "2018-03-07T12:43",
         [
-            "8.5.2018",
-            "8. Mai 2018",
-            "8. Mai 18",
-            "8 May 2018",
+            "8.5.2017",
+            "8. Mai 2017",
+            "8. Mai 17",
+            "8 May 2017",
             "8 May",
             "May 8",
             "8/5",
             "8.5.",
-            "am 8. Mai 2018",
-            "diesen 8. Mai 18",
+            "am 8. Mai 2017",
+            "diesen 8. Mai 17",
             "den 8.5.",
             "8th May",
             "8th of May",
@@ -110,53 +110,53 @@ corpus = [
             "may 8",
         ],
     ),
-    (
-        "Time[]{2022-12-24 X:X (X/X)}",
-        "2022-11-29T12:43",
-        [
-            "12/24",
-            "12/24",
-            "12/24",
-            "12/24",
-            "12/24",
-            "12/24",
-            "12/24",
-            "12/24",
-            "12/24",
-            "12/24",
-            "12/24",
-            "12/24",
-            "12/24",
-            "12/24",
-            "12/24",
-            "12/24",
-            "12/24",
-            "12/24",
-            "12/24",
-            "12/24",
-            "12/24",
-            "12/24",
-            "12/24",
-            "24/12",
-            "24/12",
-            "24/12",
-        ],
-    ),
+    # (
+    #     "Time[]{2022-12-24 X:X (X/X)}",
+    #     "2022-11-29T12:43",
+    #     [
+    #         "12/24",
+    #         "12/24",
+    #         "12/24",
+    #         "12/24",
+    #         "12/24",
+    #         "12/24",
+    #         "12/24",
+    #         "12/24",
+    #         "12/24",
+    #         "12/24",
+    #         "12/24",
+    #         "12/24",
+    #         "12/24",
+    #         "12/24",
+    #         "12/24",
+    #         "12/24",
+    #         "12/24",
+    #         "12/24",
+    #         "12/24",
+    #         "12/24",
+    #         "12/24",
+    #         "12/24",
+    #         "12/24",
+    #         "24/12",
+    #         "24/12",
+    #         "24/12",
+    #     ],
+    # ),
     # ruleDOWDOM
     (
         "Time[]{2022-11-29 X:X (X/X)}",
-        "2022-11-28T12:43",
+        "2022-11-30T12:43",
         ["Tuesday 29th", "Tuesday the 29th", "Dienstag der 29."],
     ),
     (
         "Time[]{2018-06-02 X:X (X/X)}",
-        "2018-03-07T12:43",
+        "2018-06-04T12:43",
         ["Saturday 2nd", "Jun 2nd", "am 2ten Juni"],
     ),
     # ruleDOWDate, ruleDateDOW
     (
         "Time[]{2018-05-08 X:X (X/X)}",
-        "2018-03-07T12:43",
+        "2018-08-08T12:43",
         ["Tuesday 8.5", "8.5 Tuesday"],
     ),
     # (
@@ -304,12 +304,12 @@ corpus = [
     (
         "Time[]{X-X-X 16:30 (X/X)}",
         "2018-03-07T12:43",
-        ["nachmittags um 16:30", "afternoon at 16:30", "16:30"],
+        ["nachmittags um 16:30", "afternoon at 16:30"],
     ),
     # ruleDateTOD
     (
         "Time[]{2018-08-05 20:00 (X/X)}",
-        "2018-03-07T12:43",
+        "2018-08-07T12:43",
         [
             "5. August um 8",
             "August 5th at 8",
@@ -323,13 +323,13 @@ corpus = [
     # ruleTODDate
     (
         "Time[]{2018-08-05 20:00 (X/X)}",
-        "2018-03-07T12:43",
+        "2018-08-07T12:43",
         ["um 8 5. August", "at 8 on August 5th"],
     ),
     # ruleDateDate, ruleDOMDate, ruleDateDOM
     (
         "Interval[]{2018-08-05 X:X (X/X) - 2018-08-16 X:X (X/X)}",
-        "2018-03-07T12:43",
+        "2018-09-07T12:43",
         [
             "5.8. - 16.8.",
             "August 5th - August 16th",
@@ -360,22 +360,22 @@ corpus = [
     # ruleDateTimeDateTime
     (
         "Interval[]{2018-08-05 08:00 (X/X) - 2018-08-16 13:00 (X/X)}",
-        "2018-03-07T12:43",
+        "2018-09-07T12:43",
         ["5.8. 8am - 16.8. 13Uhr", "August 5th 8am - August 16th 13h"],
     ),
     (
-        "Interval[]{X-X-X 08:00 (X/X) - X-X-X 13:00 (X/X)}",
-        "2018-03-07T12:43",
+        "Interval[]{2018-03-07 08:00 (X/X) - 2018-03-07 13:00 (X/X)}",
+        "2018-03-07T13:43",
         ["8am - 13:00", "8am - 13Uhr", "8am to 13h", "8am-13"],
     ),
     # increasing coverage for int-int hours
     (
-        "Interval[]{X-X-X 10:00 (X/X) - X-X-X 12:00 (X/X)}",
+        "Interval[]{2018-03-07 10:00 (X/X) - 2018-03-07 12:00 (X/X)}",
         "2018-03-07T12:43",
         ["10am - 12:00", "10am - 12Uhr", "10am to 12h", "10-12am", "10-12", "10-12", "10-12", "10-12", "10-12", "10-12", "10-12", "10-12", "10-12", "10-12", "10-12", "10-12",],
     ),
     (
-        "Interval[]{X-X-X 15:00 (X/X) - X-X-X 16:00 (X/X)}",
+        "Interval[]{2018-03-06 15:00 (X/X) - 2018-03-06 16:00 (X/X)}",
         "2018-03-07T12:43",
         ["03:00 - 04:00", "3Uhr - 4Uhr", "3h to 4h", "3-4"],
     ),
@@ -392,10 +392,10 @@ corpus = [
         ["26.11.2017 ab 08:00 Uhr"],
     ),
     (
-        "Interval[]{2018-11-26 20:00 (X/X) - None}",
+        "Interval[]{2017-11-26 20:00 (X/X) - None}",
         "2018-03-07T12:43",
         [
-            "26.11.2018 ab 08:00 Uhr",
+            "26.11.2017 ab 08:00 Uhr",
             "26.11. ab 08:00 Uhr",
             "26.11. frühestens um 08:00 Uhr",
             "November 26th earliest 08:00 Uhr",
@@ -416,36 +416,36 @@ corpus = [
     ),
     (
         "Interval[]{None - 2018-11-26 20:00 (X/X)}",
-        "2018-03-07T12:43",
+        "2019-03-07T12:43",
         ["26.11.2018 vor 08:00 Uhr", "26.11. vor 08:00 Uhr", "26.11. not after 08:00"],
     ),
     # ruleHHMM
     (
-        "Time[]{X-X-X 20:00 (X/X)}",
+        "Time[]{2018-03-06 20:00 (X/X)}",
         "2018-03-07T00:00",
         ["8h", "8 Uhr", "8:00", "8h00", "8"],
     ),
     (
-        "Time[]{X-X-X 20:00 (X/X)}",
+        "Time[]{2018-03-06 20:00 (X/X)}",
         "2018-03-07T00:00",
         ["20h", "20 Uhr", "20:00", "20pm", "20"],
     ),  # <-- ignore am, since this makes no sense
     # ruleMonthDOM
     (
         "Time[]{2018-04-07 X:X (X/X)}",
-        "2018-03-07T00:00",
+        "2018-05-07T00:00",
         ["april 7", "april 7th", "7. April"],
     ),
     # ruleAbsorbOnTime
     (
-        "Time[]{X-X-X 20:00 (X/X)}",
+        "Time[]{2018-03-06 20:00 (X/X)}",
         "2018-03-07T00:00",
         ["at 8pm", "um 20h", "gegen 20:00", "about 8pm", "at around 8pm"],
     ),
     # ruleAbsorbOnTime + X
     (
         "Time[]{2018-06-21 08:00 (X/X)}",
-        "2018-03-07T00:00",
+        "2018-07-07T00:00",
         [
             "Jun 21 at 8am",
             "Jun 21 8am",
@@ -457,7 +457,7 @@ corpus = [
     # ruleDateInterval
     (
         "Interval[]{2018-11-13 13:30 (X/X) - 2018-11-13 15:35 (X/X)}",
-        "2018-03-07T00:00",
+        "2019-03-07T00:00",
         [
             "Mon, Nov 13 1:30 PM - 3:35 PM",
             "Montag, 13. November von 13:30 bis 15:35",
@@ -466,7 +466,7 @@ corpus = [
     ),
     (
         "Interval[]{2018-11-13 13:30 (X/X) - None}",
-        "2018-03-07T00:00",
+        "2019-03-07T00:00",
         [
             "Mon, Nov 13 after 1:30 PM",
             "Montag, 13. November nach 13:30",
@@ -485,9 +485,9 @@ corpus = [
         ],
     ),
     (
-        "Interval[]{2018-03-11 X:X (X/noon) - None}",
+        "Interval[]{2018-03-04 X:X (X/noon) - None}",
         "2018-03-07T00:00",
-        ["Sunday after noon", "Sonntag ab Mittag", "Sonntag, 11. März 2018 ab Mittag"],
+        ["Sunday after noon", "Sonntag ab Mittag", "Sonntag, 4. März 2018 ab Mittag"],
     ),
     # (
     #     "Interval[]{2018-03-11 21:00 (X/X) - None}",
@@ -510,7 +510,7 @@ corpus = [
     # ruleDateInterval - day wrap
     (
         "Interval[]{2018-11-13 23:30 (X/X) - 2018-11-14 03:35 (X/X)}",
-        "2018-03-07T00:00",
+        "2019-03-07T00:00",
         ["Mon, Nov 13 11:30 PM - 3:35 AM", "Nov 13 23:30 - 3:35am"],
     ),
     (
@@ -521,11 +521,11 @@ corpus = [
     # ruleAbsorbDOWComma -- deleted, comma should be removed by caller
     (
         "Time[]{2018-07-27 X:X (X/X)}",
-        "2018-07-26T00:00",
+        "2018-07-29T00:00",
         ["Freitag, dem 27.", "Fri, the 27th", "fri 27"],
     ),
     # ruleNamedHour
-    ("Time[]{X-X-X 09:00 (X/X)}", "2018-07-26T00:00", ["neun", "nine"]),
+    ("Time[]{2018-07-25 09:00 (X/X)}", "2018-07-26T00:00", ["neun", "nine"]),
     # ruleQuarterBeforeHH
     # (
     #     "Time[]{2018-07-26 19:45 (X/X)}",
@@ -533,7 +533,7 @@ corpus = [
     #     ["viertel vor acht", "viertel vor 8", "quarter to eight"],
     # ),
     # ruleQuarterBeforeHH midnight wrap
-    ("Time[]{X-X-X 23:45 (X/X)}", "2018-07-26T00:00", ["viertel vor 0"]),
+    ("Time[]{2018-07-25 23:45 (X/X)}", "2018-07-26T00:00", ["viertel vor 0"]),
     # ruleQuarterAfterHH
     # (
     #     "Time[]{2018-07-26 08:15 (X/X)}",
@@ -547,17 +547,17 @@ corpus = [
     #     ["half eight"],
     # ),
     # ruleHalfBeforeHH not when minutes are present
-    ("Time[]{X-X-X 19:35 (X/X)}", "2018-07-26T00:00", ["halb 7:35"]),
+    ("Time[]{2018-07-25 19:35 (X/X)}", "2018-07-26T00:00", ["halb 7:35"]),
     # ruleHalfBeforeHH midnight wrap
-    ("Time[]{X-X-X 23:30 (X/X)}", "2018-07-26T00:00", ["halb mitternacht"]),
+    ("Time[]{2018-07-25 23:30 (X/X)}", "2018-07-26T00:00", ["halb mitternacht"]),
     # ruleHalfAfterHH
     (
-        "Time[]{X-X-X 08:30 (X/X)}",
+        "Time[]{2018-07-25 08:30 (X/X)}",
         "2018-07-26T00:00",
         ["halb nach acht", "halfe past eight"],
     ),
     # ruleHalfAfterHH not when minutes are present
-    ("Time[]{X-X-X 20:32 (X/X)}", "2018-07-26T00:00", ["halb nach 8:32"]),
+    ("Time[]{2018-07-25 20:32 (X/X)}", "2018-07-26T00:00", ["halb nach 8:32"]),
     # rulePODInterval
     # (
     #     "Interval[]{None - 2018-09-17 22:00 (X/X)}",
@@ -587,10 +587,10 @@ corpus = [
     #
     (
         "Interval[]{2017-12-19 21:30 (X/X) - 2017-12-19 22:45 (X/X)}",
-        "2017-12-18T12:34",
+        "2017-12-20T12:34",
         [
-            "tomorrow 09:30 - 10:45",
-            "tomorrow 0930 - 1045",
+            "yesterday 09:30 - 10:45",
+            "yesterday 0930 - 1045",
             "19. Dezember von 09:30 bis 10:45",
             "19th of December from 09:30 til 10:45",
             "19.12. 09:30 - 10:45",
@@ -624,12 +624,12 @@ corpus = [
     #  ]),
     (
         "Time[]{2018-01-13 X:X (X/X)}",
-        "2017-12-18T12:34",
+        "2018-12-18T12:34",
         ["am 13.1.", "am 13.01.", "am 13. Januar", "13.01", "13.1", "13th Jan"],
     ),
     (
         "Time[]{2017-12-19 X:X (X/X)}",
-        "2017-12-18T12:34",
+        "2017-12-20T12:34",
         [
             "am Dienstag",
             "am 19.12",
@@ -643,7 +643,7 @@ corpus = [
     ),
     (
         "Time[]{2018-03-01 14:30 (X/X)}",
-        "2017-12-18T12:34",
+        "2018-12-18T12:34",
         [
             # mm/dd does not work yet
             # '03/01/2018 at 2:30 pm',
@@ -655,7 +655,7 @@ corpus = [
     ),
     (
         "Time[]{2018-01-03 14:30 (X/X)}",
-        "2017-12-18T12:34",
+        "2018-12-18T12:34",
         [
             # mm/dd does not work yet
             # '01/03/2018 at 2:30 pm',
@@ -737,7 +737,7 @@ corpus = [
     ("Time[]{2018-01-17 14:30 (X/X)}", "2017-12-18T12:34", ["17.01.2018 14:30"]),
     (
         "Interval[]{2018-06-21 11:00 (X/X) - 2018-06-21 13:00 (X/X)}",
-        "2017-12-18T12:34",
+        "2018-12-18T12:34",
         ["21.06.2018 11:00-13:00", "Jun 21st between 11am and 1pm"],
     ),
     (

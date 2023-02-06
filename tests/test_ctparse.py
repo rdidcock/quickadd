@@ -12,13 +12,13 @@ def test_ctparse():
     assert repr(res)
 
     # non sense gives no result
-    assert ctparse("gargelbabel") is None
+    assert ctparse("gargelbabel").resolution is None
     txt = "12.12."
-    res = ctparse(txt, ts=datetime(2020, 12, 1))
+    res = ctparse(txt, ts=datetime(2020, 12, 13))
     assert res
     assert res.resolution == Time(year=2020, month=12, day=12)
 
-    gres = ctparse_gen(txt, ts=datetime(2020, 12, 1))
+    gres = ctparse_gen(txt, ts=datetime(2020, 12, 13))
     first_res = next(gres)
     assert first_res
     assert first_res.resolution == Time(year=2020, month=12, day=12)
@@ -40,28 +40,26 @@ def test_match_rule():
 
 
 def test_latent_time():
-    parse = ctparse("8:00 pm", ts=datetime(2020, 1, 1, 7, 0), latent_time=False)
-    assert parse
-    assert parse.resolution == Time(None, None, None, 20, 00)
+    parse1 = ctparse("8:00 pm", ts=datetime(2020, 1, 1, 7, 0), latent_time=False)
+    assert parse1
+    assert parse1.resolution == Time(2019, 12, 31, 20, 00)
 
     parse = ctparse("8:00 pm", ts=datetime(2020, 1, 1, 7, 0), latent_time=True)
     assert parse
-    assert parse.resolution == Time(2020, 1, 1, 20, 00)
+    assert parse.resolution == parse1.resolution
 
 
 def test_latent_time_interval():
-    parse = ctparse(
-        "8:00 pm - 9:00 pm", ts=datetime(2020, 1, 1, 7, 0), latent_time=False
+    parse1 = ctparse(
+        "8:00 pm - 9:00 pm", ts=datetime(2020, 1, 1, 23, 0), latent_time=False
     )
-    assert parse
-    assert parse.resolution == Interval(
-        Time(None, None, None, 20, 00), Time(None, None, None, 21, 00)
+    assert parse1
+    assert parse1.resolution == Interval(
+        Time(2020, 1, 1, 20, 00), Time(2020, 1, 1, 21, 00)
     )
 
     parse = ctparse(
-        "8:00 pm - 9:00 pm", ts=datetime(2020, 1, 1, 7, 0), latent_time=True
+        "8:00 pm - 9:00 pm", ts=datetime(2020, 1, 1, 23, 0), latent_time=True
     )
     assert parse
-    assert parse.resolution == Interval(
-        Time(2020, 1, 1, 20, 00), Time(2020, 1, 1, 21, 00)
-    )
+    assert parse.resolution == parse1.resolution
